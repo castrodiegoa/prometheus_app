@@ -5,7 +5,10 @@ import 'package:prometheus_app/pages/login_page.dart';
 import 'package:prometheus_app/pages/register_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:prometheus_app/firebase_options.dart';
-
+import 'package:prometheus_app/pages/home_page.dart'; // Importa la página de inicio (ejemplo)
+import 'package:prometheus_app/pages/find_your_account.dart'; // Importa la página de recuperación de contraseña (ejemplo)
+import 'package:prometheus_app/pages/confirm_your_account.dart'; 
+import 'package:prometheus_app/pages/create_new_password.dart'; 
 void main() async {
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +40,25 @@ class MyApp extends StatelessWidget {
           name: '/register',
           page: () => RegisterPage(),
         ), // Ruta para la página de Registro
+        GetPage(
+          name: '/home',
+          page: () => HomePage(),
+        ), // Ruta para la página principal (ejemplo)
+        GetPage(
+          name: '/forgot-password',
+          page: () => FindAccountScreen(),
+        ), // Ruta para la página de recuperación de contraseña (ejemplo)
+        GetPage(
+          name: '/confirm-account',
+          page: () => ConfirmAccountScreen(),
+        ),
+        GetPage(
+          name: '/create-password',
+          page: () =>  NewPasswordScreen(),
+        )
+        // Puedes seguir agregando más rutas de la misma forma
       ],
     );
   }
 }
+

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../controllers/auth_controller.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -6,6 +8,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final AuthController _authController =
+      Get.find(); // Obtener el controlador de autenticación
+
   int _selectedIndex = 0;
 
   // Lista de las cuatro páginas
@@ -32,7 +37,7 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () {
-              // Añade tu lógica de cierre de sesión aquí
+              _authController.signOut(); // Llamar al método de cerrar sesión
             },
           ),
         ],
