@@ -48,6 +48,7 @@ class LoginPage extends StatelessWidget {
                   onTap: () {
                     // Lógica para recuperar contraseña
                     // Añade aquí la lógica si tienes habilitado "Recuperar contraseña"
+                     Get.toNamed('/forgot-password');
                   },
                   child: const Text(
                     '¿Olvidaste tu contraseña?',
