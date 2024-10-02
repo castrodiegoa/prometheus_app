@@ -70,6 +70,9 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/Icon-Prometheus-128px.png
+    - assets/imagen1.png
+    - assets/imagen2.png
+    - assets/imagen3.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
