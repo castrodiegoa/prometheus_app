@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/auth_controller.dart';
+import '../../controllers/auth_controller.dart';
+import '../../widgets/custom_input_field.dart';
 
 class RegisterPage extends StatelessWidget {
   final AuthController _authController = Get.put(AuthController());
@@ -44,53 +45,66 @@ class RegisterPage extends StatelessWidget {
                       ),
                 ),
                 const SizedBox(height: 20),
-                _buildTextField(context, 'Número de documento',
-                    _documentNumberController, Icons.numbers,
-                    keyboardType: TextInputType.number),
+                // Campo para Número de documento
+                CustomInputField(
+                  hintText: 'Número de documento',
+                  controller: _documentNumberController,
+                  icon: Icons.numbers,
+                  keyboardType: TextInputType.number,
+                ),
                 const SizedBox(height: 20),
-                _buildTextField(
-                    context, 'Nombres', _firstNameController, Icons.person),
+                // Campo para Nombres
+                CustomInputField(
+                  hintText: 'Nombres',
+                  controller: _firstNameController,
+                  icon: Icons.person,
+                ),
                 const SizedBox(height: 20),
-                _buildTextField(context, 'Apellidos', _lastNameController,
-                    Icons.person_outline),
+                // Campo para Apellidos
+                CustomInputField(
+                  hintText: 'Apellidos',
+                  controller: _lastNameController,
+                  icon: Icons.person_outline,
+                ),
                 const SizedBox(height: 20),
-                _buildTextField(context, 'Número de teléfono', _phoneController,
-                    Icons.phone,
-                    keyboardType: TextInputType.phone),
+                // Campo para Número de teléfono
+                CustomInputField(
+                  hintText: 'Número de teléfono',
+                  controller: _phoneController,
+                  icon: Icons.phone,
+                  keyboardType: TextInputType.phone,
+                ),
                 const SizedBox(height: 20),
-                _buildTextField(context, 'Correo electrónico', _emailController,
-                    Icons.email),
+                // Campo para Correo electrónico
+                CustomInputField(
+                  hintText: 'Correo electrónico',
+                  controller: _emailController,
+                  icon: Icons.email,
+                  keyboardType: TextInputType.emailAddress,
+                ),
                 const SizedBox(height: 20),
-                _buildTextField(
-                    context, 'Contraseña', _passwordController, Icons.lock,
-                    obscureText: true),
+                // Campo para Contraseña
+                CustomInputField(
+                  hintText: 'Contraseña',
+                  controller: _passwordController,
+                  icon: Icons.lock,
+                  obscureText: true,
+                ),
                 const SizedBox(height: 20),
-                _buildTextField(context, 'Confirmar contraseña',
-                    _confirmPasswordController, Icons.lock_outline,
-                    obscureText: true),
+                // Campo para Confirmar contraseña
+                CustomInputField(
+                  hintText: 'Confirmar contraseña',
+                  controller: _confirmPasswordController,
+                  icon: Icons.lock_outline,
+                  obscureText: true,
+                ),
                 const SizedBox(height: 30),
+                // Botón para continuar
                 _buildContinueButton(context),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  // Método para crear un campo de texto con icono
-  Widget _buildTextField(BuildContext context, String hintText,
-      TextEditingController controller, IconData icon,
-      {bool obscureText = false,
-      TextInputType keyboardType = TextInputType.text}) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType, // Definir el tipo de teclado
-      decoration: InputDecoration(
-        labelText: hintText,
-        prefixIcon: Icon(icon),
-        border: const UnderlineInputBorder(),
       ),
     );
   }

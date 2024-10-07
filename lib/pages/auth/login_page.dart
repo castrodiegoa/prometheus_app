@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/auth_controller.dart';
+import '../../controllers/auth_controller.dart';
+import '../../widgets/custom_input_field.dart'; // Importa el nuevo widget
 
 class LoginPage extends StatelessWidget {
-  final AuthController _authController =
-      Get.put(AuthController()); // Controlador de autenticación
+  final AuthController _authController = Get.put(AuthController());
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -25,30 +25,27 @@ class LoginPage extends StatelessWidget {
                     Image.asset('assets/Icon-Prometheus-128px.png', height: 80),
               ),
               const SizedBox(height: 30),
-              TextField(
+              // Campo de correo electrónico
+              CustomInputField(
+                hintText: 'Correo electrónico',
                 controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Correo electrónico',
-                  prefixIcon: Icon(Icons.email),
-                ),
+                icon: Icons.email,
+                keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 20),
-              TextField(
+              // Campo de contraseña
+              CustomInputField(
+                hintText: 'Contraseña',
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Contraseña',
-                  prefixIcon: Icon(Icons.lock),
-                ),
+                icon: Icons.lock,
+                obscureText: true, // Ocultar el texto
               ),
               const SizedBox(height: 10),
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
                   onTap: () {
-                    // Lógica para recuperar contraseña
-                    // Añade aquí la lógica si tienes habilitado "Recuperar contraseña"
-                     Get.toNamed('/forgot-password');
+                    Get.toNamed('/forgot-password');
                   },
                   child: const Text(
                     '¿Olvidaste tu contraseña?',
@@ -58,19 +55,16 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               Obx(() => _authController.isLoading.value
-                  ? const Center(
-                      child: CircularProgressIndicator()) // Indicador de carga
+                  ? const Center(child: CircularProgressIndicator())
                   : Center(
                       child: SizedBox(
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
                           onPressed: () {
-                            // Lógica de inicio de sesión
                             String email = _emailController.text.trim();
                             String password = _passwordController.text.trim();
-                            _authController.login(
-                                email, password); // Llamar al login
+                            _authController.login(email, password);
                           },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
@@ -88,7 +82,6 @@ class LoginPage extends StatelessWidget {
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    // Redirigir a la página de Crear Cuenta
                     Get.toNamed('/register');
                   },
                   child: const Text(

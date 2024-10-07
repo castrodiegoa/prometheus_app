@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:prometheus_app/pages/login_page.dart';
-import 'package:prometheus_app/pages/register_page.dart';
+import 'package:prometheus_app/pages/auth/login_page.dart';
+import 'package:prometheus_app/pages/auth/register_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:prometheus_app/firebase_options.dart';
 import 'package:prometheus_app/pages/home_page.dart'; // Importa la página de inicio (ejemplo)
-import 'package:prometheus_app/pages/find_your_account.dart'; // Importa la página de recuperación de contraseña (ejemplo)
-import 'package:prometheus_app/pages/confirm_your_account.dart'; 
-import 'package:prometheus_app/pages/create_new_password.dart'; 
+import 'package:prometheus_app/pages/auth/find_your_account.dart'; // Importa la página de recuperación de contraseña (ejemplo)
+import 'package:prometheus_app/pages/auth/confirm_your_account.dart';
+import 'package:prometheus_app/pages/auth/create_new_password.dart';
+
 void main() async {
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,11 +55,10 @@ class MyApp extends StatelessWidget {
         ),
         GetPage(
           name: '/create-password',
-          page: () =>  NewPasswordScreen(),
+          page: () => NewPasswordScreen(),
         )
         // Puedes seguir agregando más rutas de la misma forma
       ],
     );
   }
 }
-
