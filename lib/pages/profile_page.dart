@@ -1,17 +1,177 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/custom_input_field.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _documentNumberController =
       TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  // final ProfileController _profileController = Get.find();
-  // final AuthController _authController = Get.find();
+  final TextEditingController _currentPasswordController =
+      TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
-  ProfilePage({super.key});
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData(); // Cargar datos del usuario cuando se inicie la página
+  }
+
+  // Método para cargar los datos del usuario logueado
+  Future<void> _loadUserData() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
+
+        if (userDoc.exists) {
+          setState(() {
+            _documentNumberController.text = userDoc['document'] ?? '';
+            _emailController.text = user.email ?? '';
+            _phoneController.text = userDoc['phoneNumber'] ?? '';
+            _firstNameController.text = userDoc['firstName'] ?? '';
+            _lastNameController.text = userDoc['lastName'] ?? '';
+          });
+        }
+      } catch (e) {
+        print('Error loading user data: $e');
+        // Muestra un error al usuario si falla la carga de datos
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al cargar los datos del perfil')),
+        );
+      }
+    }
+  }
+
+  // Método para actualizar los datos en Firebase
+  Future<void> _updateUserData() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        // Verificar si el documento ya está registrado con otro usuario
+        QuerySnapshot documentSnapshot = await _firestore
+            .collection('users')
+            .where('document', isEqualTo: _documentNumberController.text)
+            .where(FieldPath.documentId, isNotEqualTo: user.uid)
+            .get();
+
+        if (documentSnapshot.docs.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'El número de documento ya está registrado con otro usuario.')),
+          );
+          return;
+        }
+
+        // Verificar si el correo ya está registrado con otro usuario
+        if (_emailController.text != user.email) {
+          QuerySnapshot emailSnapshot = await _firestore
+              .collection('users')
+              .where('email', isEqualTo: _emailController.text)
+              .where(FieldPath.documentId, isNotEqualTo: user.uid)
+              .get();
+
+          if (emailSnapshot.docs.isNotEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      'El correo electrónico ya está registrado con otro usuario.')),
+            );
+            return;
+          }
+
+          // Usar verifyBeforeUpdateEmail en lugar de updateEmail
+          await user.verifyBeforeUpdateEmail(_emailController.text).then((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      'Correo de verificación enviado. Verifica el correo para completar el cambio.')),
+            );
+          }).catchError((error) {
+            print('Error verifying email: $error');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text('Error al enviar la verificación del correo.')),
+            );
+          });
+        }
+
+        // Actualizar otros datos en Firestore
+        await _firestore.collection('users').doc(user.uid).update({
+          'document': _documentNumberController.text,
+          'phoneNumber': _phoneController.text,
+          'firstName': _firstNameController.text,
+          'lastName': _lastNameController.text,
+          //'email': _emailController.text,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        // Mostrar éxito en la actualización de otros datos
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Resto de datos actualizados correctamente. El correo se actualizará cuando lo verifiques')),
+        );
+      } catch (e) {
+        print('Error updating user data: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al actualizar el perfil.')),
+        );
+      }
+    }
+  }
+
+  // Método para cambiar la contraseña
+  Future<void> _changePassword() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        // Verificar si la contraseña actual es correcta
+        final credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: _currentPasswordController.text,
+        );
+
+        await user.reauthenticateWithCredential(credential);
+
+        if (_newPasswordController.text == _confirmPasswordController.text) {
+          await user.updatePassword(_newPasswordController.text);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Contraseña cambiada correctamente.')),
+          );
+          _currentPasswordController.clear();
+          _newPasswordController.clear();
+          _confirmPasswordController.clear();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Las nuevas contraseñas no coinciden.')),
+          );
+        }
+      } catch (e) {
+        print('Error cambiando la contraseña: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Error al cambiar la contraseña. Verifica la contraseña actual.')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +243,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Método para el botón de guardar
+  // Botón para guardar los cambios
   Widget _buildSaveButton(BuildContext context) {
     return Center(
       child: SizedBox(
@@ -96,9 +256,8 @@ class ProfilePage extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
             ),
           ),
-          onPressed: () {
-            // Aquí iría la lógica para guardar el perfil
-          },
+          onPressed:
+              _updateUserData, // Llamar al método para actualizar los datos
           child: const Text(
             'Guardar cambios',
             style: TextStyle(fontSize: 18, color: Colors.white),
@@ -108,12 +267,12 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Método para el texto que redirige a cambiar contraseña
+  // Texto para cambiar contraseña
   Widget _buildChangePasswordText(BuildContext context) {
     return Center(
       child: GestureDetector(
         onTap: () {
-          // Mostrar el diálogo para cambiar la contraseña
+          // Mostrar un diálogo para cambiar la contraseña
           _showChangePasswordDialog(context);
         },
         child: const Text(
@@ -125,55 +284,53 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Método para mostrar el diálogo de cambio de contraseña
+  // Método para mostrar un diálogo para cambiar la contraseña
   void _showChangePasswordDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        TextEditingController _currentPasswordController =
-            TextEditingController();
-        TextEditingController _newPasswordController = TextEditingController();
-        TextEditingController _confirmPasswordController =
-            TextEditingController();
-
+      builder: (context) {
         return AlertDialog(
-          title: const Text('Cambiar contraseña'),
+          title: const Text('Cambiar Contraseña'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Campo para la contraseña actual
               TextField(
                 controller: _currentPasswordController,
                 obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: 'Contraseña actual'),
+                decoration: const InputDecoration(
+                  labelText: 'Contraseña actual',
+                ),
               ),
-              const SizedBox(height: 10),
+              // Campo para la nueva contraseña
               TextField(
                 controller: _newPasswordController,
                 obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: 'Nueva contraseña'),
+                decoration: const InputDecoration(
+                  labelText: 'Nueva contraseña',
+                ),
               ),
-              const SizedBox(height: 10),
+              // Campo para confirmar la nueva contraseña
               TextField(
                 controller: _confirmPasswordController,
                 obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: 'Confirmar contraseña'),
+                decoration: const InputDecoration(
+                  labelText: 'Confirmar nueva contraseña',
+                ),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () {
-                // Aquí puedes agregar la lógica para cambiar la contraseña
-                Navigator.of(context).pop();
+                _changePassword(); // Llamar al método para cambiar la contraseña
+                Navigator.of(context).pop(); // Cerrar el diálogo
               },
-              child: const Text('Guardar'),
+              child: const Text('Cambiar'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Cerrar el diálogo sin hacer nada
               },
               child: const Text('Cancelar'),
             ),
