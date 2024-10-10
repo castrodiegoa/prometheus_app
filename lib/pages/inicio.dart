@@ -121,10 +121,10 @@ class PaginaInicio extends StatelessWidget {
         currentIndex: 0, // Establece el índice actual
         type: BottomNavigationBarType.fixed,
         items: [
-          const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Casa'),
-          const BottomNavigationBarItem(icon: Icon(Icons.admin_panel_settings), label: 'Administración'),
-          const BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Estadísticas'),
-          const BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Configuración'),
+          const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          const BottomNavigationBarItem(icon: Icon(Icons.admin_panel_settings), label: 'Buscar'),
+          const BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Notificaciones'),
+          const BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Perfil'),
         ],
       ),
     );

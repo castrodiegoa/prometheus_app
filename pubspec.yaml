@@ -30,7 +30,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+     
+  intl: ^0.17.0           # Dependencia para la internacionalización y formateo de fechas
+  image_picker: ^0.8.4+4 
   get:
   firebase_auth:
   firebase_core:
