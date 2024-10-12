@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/custom_input_field.dart';
+import '../../widgets/custom_button.dart';
+import 'package:get/get.dart';
+
+// TODO: Organizar en service y controller
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -23,11 +27,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool isSaving = false;
 
   @override
   void initState() {
     super.initState();
-    _loadUserData(); // Cargar datos del usuario cuando se inicie la página
+    _loadUserData();
   }
 
   // Método para cargar los datos del usuario logueado
@@ -59,6 +64,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // Método para actualizar los datos en Firebase
   Future<void> _updateUserData() async {
+    setState(() {
+      isSaving = true;
+    });
     User? user = _auth.currentUser;
     if (user != null) {
       try {
@@ -100,7 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                   content: Text(
-                      'Correo de verificación enviado. Verifica el correo para completar el cambio.')),
+                      'Correo de verificación enviado. Verifica el correo para completar el cambio de este.')),
             );
           }).catchError((error) {
             print('Error verifying email: $error');
@@ -123,15 +131,17 @@ class _ProfilePageState extends State<ProfilePage> {
 
         // Mostrar éxito en la actualización de otros datos
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Resto de datos actualizados correctamente. El correo se actualizará cuando lo verifiques')),
+          SnackBar(content: Text('Resto de datos actualizados correctamente.')),
         );
       } catch (e) {
         print('Error updating user data: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al actualizar el perfil.')),
         );
+      } finally {
+        setState(() {
+          isSaving = false;
+        });
       }
     }
   }
@@ -149,19 +159,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
         await user.reauthenticateWithCredential(credential);
 
-        if (_newPasswordController.text == _confirmPasswordController.text) {
-          await user.updatePassword(_newPasswordController.text);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Contraseña cambiada correctamente.')),
-          );
-          _currentPasswordController.clear();
-          _newPasswordController.clear();
-          _confirmPasswordController.clear();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Las nuevas contraseñas no coinciden.')),
-          );
-        }
+        await user.updatePassword(_newPasswordController.text);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Contraseña cambiada correctamente.')),
+        );
+        _currentPasswordController.clear();
+        _newPasswordController.clear();
+        _confirmPasswordController.clear();
       } catch (e) {
         print('Error cambiando la contraseña: $e');
         ScaffoldMessenger.of(context).showSnackBar(
@@ -243,28 +247,76 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Botón para guardar los cambios
   Widget _buildSaveButton(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: double.infinity,
-        height: 50,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-          ),
-          onPressed:
-              _updateUserData, // Llamar al método para actualizar los datos
-          child: const Text(
-            'Guardar cambios',
-            style: TextStyle(fontSize: 18, color: Colors.white),
-          ),
-        ),
-      ),
+    return CustomButton(
+      text: 'Guardar cambios',
+      onPressed: isSaving
+          ? null
+          : () {
+              // Obtener valores de los campos
+              String documentNumber = _documentNumberController.text.trim();
+              String firstName = _firstNameController.text.trim();
+              String lastName = _lastNameController.text.trim();
+              String phone = _phoneController.text.trim();
+              String email = _emailController.text.trim();
+
+              // Validar campos
+              String? validationMessage = _validateFields(
+                  documentNumber, email, phone, firstName, lastName);
+
+              if (validationMessage != null) {
+                Get.snackbar('Advertencia', validationMessage,
+                    backgroundColor: Colors.red, colorText: Colors.white);
+                return;
+              }
+
+              _updateUserData(); // Si no hay errores, procede a actualizar
+            },
+      isLoading: isSaving, // Pasar el estado de isSaving al CustomButton
     );
+  }
+
+// Método para validar campos
+  String? _validateFields(String documentNumber, String email, String phone,
+      String firstName, String lastName) {
+    // Validar que todos los campos no estén vacíos
+    if (documentNumber.isEmpty ||
+        email.isEmpty ||
+        phone.isEmpty ||
+        firstName.isEmpty ||
+        lastName.isEmpty) {
+      return 'Todos los campos son obligatorios';
+    }
+
+    if (documentNumber.length < 7 || documentNumber.length > 15) {
+      return 'El número de documento debe tener entre 7 y 15 caracteres';
+    }
+
+    if (!RegExp(r'^[0-9]+$').hasMatch(documentNumber)) {
+      return 'El número de documento debe contener solo caracteres numéricos';
+    }
+
+    if (firstName.length > 50) {
+      return 'El nombre no puede tener más de 50 caracteres';
+    }
+
+    if (lastName.length > 50) {
+      return 'El apellido no puede tener más de 50 caracteres';
+    }
+
+    if (email.length > 255) {
+      return 'El correo no puede tener más de 255 caracteres';
+    }
+
+    if (phone.length < 10 || phone.length > 15) {
+      return 'El número de teléfono debe tener entre 10 y 15 caracteres';
+    }
+
+    if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+      return 'El número de teléfono debe contener solo caracteres numéricos';
+    }
+
+    return null; // No hay errores
   }
 
   // Texto para cambiar contraseña
@@ -295,34 +347,47 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Campo para la contraseña actual
-              TextField(
+              CustomInputField(
+                hintText: 'Contraseña actual',
                 controller: _currentPasswordController,
+                icon: Icons.lock,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Contraseña actual',
-                ),
               ),
+              const SizedBox(height: 20),
               // Campo para la nueva contraseña
-              TextField(
+              CustomInputField(
+                hintText: 'Nueva contraseña',
                 controller: _newPasswordController,
+                icon: Icons.lock_outline,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Nueva contraseña',
-                ),
               ),
+              const SizedBox(height: 20),
               // Campo para confirmar la nueva contraseña
-              TextField(
+              CustomInputField(
+                hintText: 'Confirmar contraseña',
                 controller: _confirmPasswordController,
+                icon: Icons.lock_outline,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Confirmar nueva contraseña',
-                ),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () {
+                // Validar antes de cambiar la contraseña
+                String? validationMessage = _validatePasswordFields(
+                  _currentPasswordController.text.trim(),
+                  _newPasswordController.text.trim(),
+                  _confirmPasswordController.text.trim(),
+                );
+
+                if (validationMessage != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(validationMessage)),
+                  );
+                  return; // No continuar si hay un error
+                }
+
                 _changePassword(); // Llamar al método para cambiar la contraseña
                 Navigator.of(context).pop(); // Cerrar el diálogo
               },
@@ -339,4 +404,24 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
+}
+
+// Método para validar los campos de contraseña
+String? _validatePasswordFields(
+    String currentPassword, String newPassword, String confirmPassword) {
+  if (currentPassword.isEmpty ||
+      newPassword.isEmpty ||
+      confirmPassword.isEmpty) {
+    return 'Todos los campos son obligatorios';
+  }
+
+  if (newPassword.length < 6 || newPassword.length > 255) {
+    return 'La nueva contraseña debe tener entre 6 y 255 caracteres';
+  }
+
+  if (newPassword != confirmPassword) {
+    return 'Las nuevas contraseñas no coinciden';
+  }
+
+  return null; // No hay errores
 }

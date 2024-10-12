@@ -65,7 +65,8 @@ class PaymentPlanDetails extends StatelessWidget {
                       subtitle: Text(amount),
                       onTap: () {
                         // Navegar a la vista de detalle del mes
-                        Get.to(() => PaymentMonthDetail(payment: payment));
+                        Get.to(() => PaymentMonthDetail(
+                            payment: payment, rentId: rentId));
                       },
                     );
                   },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../widgets/custom_input_field.dart';
+import '../../widgets/custom_button.dart';
 
 class RegisterPage extends StatelessWidget {
   final AuthController _authController = Get.put(AuthController());
@@ -111,60 +112,96 @@ class RegisterPage extends StatelessWidget {
 
   // Método para el botón de continuar
   Widget _buildContinueButton(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: double.infinity,
-        height: 50,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange, // Color de fondo del botón
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
+    return Obx(() => Center(
+          child: CustomButton(
+            text: 'Continuar',
+            isLoading: _authController.isLoading.value,
+            onPressed: () {
+              String documentNumber = _documentNumberController.text.trim();
+              String email = _emailController.text.trim();
+              String phone = _phoneController.text.trim();
+              String firstName = _firstNameController.text.trim();
+              String lastName = _lastNameController.text.trim();
+              String password = _passwordController.text.trim();
+              String confirmPassword = _confirmPasswordController.text.trim();
+
+              // Llamar a las funciones de validación
+              String? validationError = _validateFields(documentNumber, email,
+                  phone, firstName, lastName, password, confirmPassword);
+
+              if (validationError != null) {
+                Get.snackbar('Advertencia', validationError,
+                    backgroundColor: Colors.red, colorText: Colors.white);
+                return;
+              }
+
+              // Lógica de registro
+              _authController.register(
+                  documentNumber, firstName, lastName, phone, email, password);
+            },
           ),
-          onPressed: () {
-            String documentNumber = _documentNumberController.text.trim();
-            String email = _emailController.text.trim();
-            String phone = _phoneController.text.trim();
-            String firstName = _firstNameController.text.trim();
-            String lastName = _lastNameController.text.trim();
-            String password = _passwordController.text.trim();
-            String confirmPassword = _confirmPasswordController.text.trim();
+        ));
+  }
 
-            if (documentNumber.isEmpty ||
-                email.isEmpty ||
-                phone.isEmpty ||
-                firstName.isEmpty ||
-                lastName.isEmpty ||
-                password.isEmpty ||
-                confirmPassword.isEmpty) {
-              Get.snackbar('Error', 'Todos los campos son obligatorios',
-                  backgroundColor: Colors.red, colorText: Colors.white);
-              return;
-            }
+  // Método para validar campos
+  String? _validateFields(
+      String documentNumber,
+      String email,
+      String phone,
+      String firstName,
+      String lastName,
+      String password,
+      String confirmPassword) {
+    if (documentNumber.isEmpty ||
+        email.isEmpty ||
+        phone.isEmpty ||
+        firstName.isEmpty ||
+        lastName.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
+      return 'Todos los campos son obligatorios';
+    }
 
-            if (password != confirmPassword) {
-              Get.snackbar('Error', 'Las contraseñas no coinciden',
-                  backgroundColor: Colors.red, colorText: Colors.white);
-              return;
-            }
+    if (documentNumber.length < 7 || documentNumber.length > 15) {
+      return 'El número de documento debe tener entre 7 y 15 caracteres';
+    }
 
-            if (!GetUtils.isEmail(email)) {
-              Get.snackbar('Error', 'Correo no válido',
-                  backgroundColor: Colors.red, colorText: Colors.white);
-              return;
-            }
+    if (!RegExp(r'^[0-9]+$').hasMatch(documentNumber)) {
+      return 'El número de documento debe contener solo caracteres numéricos';
+    }
 
-            // Lógica de registro
-            _authController.register(
-                documentNumber, firstName, lastName, phone, email, password);
-          },
-          child: const Text(
-            'Continuar',
-            style: TextStyle(fontSize: 18, color: Colors.white),
-          ),
-        ),
-      ),
-    );
+    if (firstName.length > 50) {
+      return 'El nombre no puede tener más de 50 caracteres';
+    }
+
+    if (lastName.length > 50) {
+      return 'El apellido no puede tener más de 50 caracteres';
+    }
+
+    if (email.length > 255) {
+      return 'El correo no puede tener más de 255 caracteres';
+    }
+
+    if (phone.length < 10 || phone.length > 15) {
+      return 'El número de teléfono debe tener entre 10 y 15 caracteres';
+    }
+
+    if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+      return 'El número de teléfono debe contener solo caracteres numéricos';
+    }
+
+    if (password.length < 6 || password.length > 255) {
+      return 'La contraseña debe tener entre 6 y 255 caracteres';
+    }
+
+    if (password != confirmPassword) {
+      return 'Las contraseñas no coinciden';
+    }
+
+    if (!GetUtils.isEmail(email)) {
+      return 'Correo no válido';
+    }
+
+    return null; // No hay errores
   }
 }

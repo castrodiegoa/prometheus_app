@@ -1,4 +1,3 @@
-// mock_data.dart
 class Payment {
   final int id;
   final DateTime date;
@@ -8,6 +7,8 @@ class Payment {
   final bool isEnergyPaid;
   final bool isGasPaid;
   final int idRent;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   Payment({
     required this.id,
@@ -18,6 +19,8 @@ class Payment {
     required this.isEnergyPaid,
     required this.isGasPaid,
     required this.idRent,
+    required this.createdAt,
+    required this.updatedAt,
   });
 }
 
@@ -31,6 +34,8 @@ List<Payment> payments = [
     isEnergyPaid: true,
     isGasPaid: false,
     idRent: 90410,
+    createdAt: DateTime(2023, 7, 13), // Fecha de creación
+    updatedAt: DateTime(2024, 7, 13), // Fecha de actualización
   ),
   Payment(
     id: 2,
@@ -41,6 +46,8 @@ List<Payment> payments = [
     isEnergyPaid: false,
     isGasPaid: false,
     idRent: 90412,
+    createdAt: DateTime(2023, 9, 20), // Fecha de creación
+    updatedAt: DateTime(2024, 9, 20), // Fecha de actualización
   ),
   Payment(
     id: 3,
@@ -51,5 +58,7 @@ List<Payment> payments = [
     isEnergyPaid: true,
     isGasPaid: true,
     idRent: 90415,
+    createdAt: DateTime(2023, 12, 25), // Fecha de creación
+    updatedAt: DateTime(2024, 12, 25), // Fecha de actualización
   ),
 ];
