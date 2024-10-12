@@ -10,7 +10,7 @@ class CustomButton extends StatelessWidget {
   const CustomButton({
     Key? key,
     required this.text,
-    this.onPressed, // Permite que onPressed sea null
+    this.onPressed,
     this.isLoading = false,
     this.backgroundColor = Colors.orange,
     this.textColor = Colors.white,

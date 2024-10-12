@@ -17,7 +17,7 @@ class ProfileController extends GetxController {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  bool isSaving = false;
+  var isLoading = false.obs;
 
   Future<void> loadUserData() async {
     try {
@@ -50,8 +50,7 @@ class ProfileController extends GetxController {
       return;
     }
 
-    isSaving = true;
-    update();
+    isLoading.value = true;
 
     try {
       await _service.updateUserData({
@@ -70,8 +69,7 @@ class ProfileController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', e.toString());
     } finally {
-      isSaving = false;
-      update();
+      isLoading.value = false;
     }
   }
 

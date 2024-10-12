@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../widgets/custom_input_field.dart';
 import '../../widgets/custom_button.dart';
 import 'package:prometheus_app/controllers/profile_controller.dart';
@@ -80,13 +81,15 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildSaveButton(BuildContext context) {
-    return CustomButton(
-      text: 'Guardar cambios',
-      onPressed: _controller.isSaving
-          ? null
-          : () => _controller.updateUserData(context),
-      isLoading: _controller.isSaving,
-    );
+    return Obx(() {
+      return CustomButton(
+        text: 'Guardar cambios',
+        onPressed: _controller.isLoading.value
+            ? null
+            : () => _controller.updateUserData(context),
+        isLoading: _controller.isLoading.value,
+      );
+    });
   }
 
   Widget _buildChangePasswordText(BuildContext context) {
