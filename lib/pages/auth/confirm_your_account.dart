@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:prometheus_app/widgets/custom_input_field.dart';
+import 'package:prometheus_app/widgets/custom_button.dart';
 
 class ConfirmAccountScreen extends StatelessWidget {
+  final TextEditingController codeController = TextEditingController();
+
+  ConfirmAccountScreen({super.key}); // Controlador para el campo de entrada
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Text(
+        title: const Text(
           '¿Olvidaste tu contraseña?',
           style: TextStyle(color: Colors.grey),
         ),
@@ -25,57 +31,36 @@ class ConfirmAccountScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
+            const Text(
               'Confirma tu cuenta',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
-            Text(
+            const SizedBox(height: 10),
+            const Text(
               'Te hemos enviado un código a tu correo electrónico. Ingresa ese código para confirmar tu cuenta.',
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            SizedBox(height: 20),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Ingresa el código',
-                labelStyle: TextStyle(color: Colors.grey),
-                prefixIcon: Icon(Icons.lock_outlined, color: Colors.grey),
-                border: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade300, // Borde inferior gris claro
-                  ),
-                ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade300, // Borde gris claro para estado normal
-                  ),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.orange, // Borde color naranja cuando está enfocado
-                  ),
-                ),
-              ),
+            const SizedBox(height: 20),
+            // Reemplazar TextField por CustomInputField
+            CustomInputField(
+              hintText: 'Ingresa el código',
+              controller: codeController,
+              icon: Icons.lock_outlined,
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
+            const SizedBox(height: 20),
+            // Reemplazar ElevatedButton por CustomButton
+            CustomButton(
+              text: 'Continuar',
               onPressed: () {
-                Get.toNamed('/create-password');  // Navegar a Create a New Password
+                Get.toNamed(
+                    '/create-password'); // Navegar a Create a New Password
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                padding: EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text(
-                'Continuar',
-                style: TextStyle(fontSize: 18 , color: Colors.white),
-              ),
             ),
             TextButton(
               onPressed: () {
                 // Acción para reenviar el código
               },
-              child: Text(
+              child: const Text(
                 'Reenviar código',
                 style: TextStyle(color: Colors.orange),
               ),
@@ -86,4 +71,3 @@ class ConfirmAccountScreen extends StatelessWidget {
     );
   }
 }
-

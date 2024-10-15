@@ -17,7 +17,7 @@ class PaymentPlanManagement extends StatelessWidget {
             Get.back();
           },
         ),
-        title: const Text('Payments Plan'),
+        title: const Text('Pagos'),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -30,7 +30,7 @@ class PaymentPlanManagement extends StatelessWidget {
               TextField(
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.search),
-                  hintText: 'Search',
+                  hintText: 'Buscar',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -41,7 +41,7 @@ class PaymentPlanManagement extends StatelessWidget {
               // Botón de sorteo
               Row(
                 children: [
-                  const Text('Sorter'),
+                  const Text('Filtrar'),
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.filter_alt_outlined),
@@ -55,7 +55,7 @@ class PaymentPlanManagement extends StatelessWidget {
               // Botón de eliminar en grupo
               Row(
                 children: [
-                  const Text('Delete in group'),
+                  const Text('Eliminar en grupo'),
                   const Spacer(),
                   ElevatedButton(
                     onPressed: () {
@@ -64,7 +64,7 @@ class PaymentPlanManagement extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                     ),
-                    child: const Text('Delete'),
+                    child: const Text('Eliminar'),
                   ),
                 ],
               ),
@@ -84,11 +84,11 @@ class PaymentPlanManagement extends StatelessWidget {
                         child: Icon(Icons.receipt_long, color: Colors.white),
                       ),
                       title: Text(
-                        'Tenant ${payment.idRent}',
+                        'Alquiler ${payment.idRent}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(
-                        'Since ${DateFormat('dd/MM/yyyy').format(payment.date)}\nUntil ${DateFormat('dd/MM/yyyy').format(payment.date.add(const Duration(days: 365)))}',
+                        'Desde ${DateFormat('dd/MM/yyyy').format(payment.date)}\nHasta ${DateFormat('dd/MM/yyyy').format(payment.date.add(const Duration(days: 365)))}',
                       ),
                       trailing: Radio(
                         value: payment.id,
@@ -118,7 +118,7 @@ class PaymentPlanManagement extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
                   ),
-                  child: const Text('New'),
+                  child: const Text('Nuevo'),
                 ),
               ),
             ],

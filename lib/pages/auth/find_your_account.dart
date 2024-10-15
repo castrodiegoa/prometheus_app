@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:prometheus_app/widgets/custom_input_field.dart';
+import 'package:prometheus_app/widgets/custom_button.dart';
 
 class FindAccountScreen extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+
+  FindAccountScreen({super.key}); // Controlador para el campo de entrada
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Text(
+        title: const Text(
           '¿Olvidaste tu contraseña?',
           style: TextStyle(color: Colors.grey),
         ),
@@ -25,51 +31,28 @@ class FindAccountScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
+            const Text(
               'Busca tu cuenta',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'Introduce tu dirección de correo electrónico.',
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Correo electrónico',
-                labelStyle: TextStyle(color: Colors.grey),
-                prefixIcon: Icon(Icons.email_outlined, color: Colors.grey),
-                border: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade300, // Borde gris claro solo en la parte inferior
-                  ),
-                ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade300, // Borde gris claro para estado normal
-                  ),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.orange, // Borde color naranja cuando está enfocado
-                  ),
-                ),
-              ),
+            const SizedBox(height: 10),
+            CustomInputField(
+              hintText: 'Correo electrónico',
+              controller: emailController,
+              icon: Icons.email_outlined,
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
+            const SizedBox(height: 20),
+            CustomButton(
+              text: 'Continuar',
               onPressed: () {
+                // Aquí se puede realizar la validación o cualquier lógica antes de navegar
                 Get.toNamed('/confirm-account');
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                padding: EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text(
-                'Continuar',
-                style: TextStyle(fontSize: 18 , color: Colors.white),
-              ),
             ),
           ],
         ),
@@ -77,4 +60,3 @@ class FindAccountScreen extends StatelessWidget {
     );
   }
 }
-

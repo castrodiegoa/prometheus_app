@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart'; // Necesario para inicializar los formatos de fechas locales
 import 'package:prometheus_app/database/mock_data.dart';
 import 'package:prometheus_app/pages/payment_month_detail_3.dart'; // Importar la vista del detalle de pagos del mes
 
@@ -11,6 +12,9 @@ class PaymentPlanDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Inicializar el formato de fechas en español antes de usarlo
+    initializeDateFormatting('es_ES', null);
+
     // Filtramos los pagos que corresponden a este rentId
     List<Payment> rentPayments =
         payments.where((payment) => payment.idRent == rentId).toList();
@@ -23,7 +27,7 @@ class PaymentPlanDetails extends StatelessWidget {
             Get.back();
           },
         ),
-        title: const Text('Payments Plan Details'),
+        title: const Text('Detalle del Plan de Pagos'),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -34,7 +38,7 @@ class PaymentPlanDetails extends StatelessWidget {
             children: [
               // ID del arriendo
               Text(
-                'Rent ID: $rentId',
+                'ID de alquiler: $rentId',
                 style: const TextStyle(
                     fontWeight: FontWeight.bold, fontSize: 18.0),
               ),
@@ -46,7 +50,8 @@ class PaymentPlanDetails extends StatelessWidget {
                   itemCount: rentPayments.length,
                   itemBuilder: (context, index) {
                     final payment = rentPayments[index];
-                    String month = DateFormat('MMMM').format(payment.date);
+                    String month =
+                        DateFormat('MMMM', 'es_ES').format(payment.date);
                     String amount =
                         NumberFormat.currency(locale: 'es_CO', symbol: '\$')
                             .format(payment.amount);

@@ -6,6 +6,7 @@ class CustomInputField extends StatelessWidget {
   final IconData icon;
   final bool obscureText;
   final TextInputType keyboardType;
+  final Widget? suffixIcon;
 
   const CustomInputField({
     super.key,
@@ -14,19 +15,48 @@ class CustomInputField extends StatelessWidget {
     required this.icon,
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
+    this.suffixIcon,
   });
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: hintText,
-        prefixIcon: Icon(icon),
-        border: const UnderlineInputBorder(), // Estilo de borde subrayado
-      ),
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: controller,
+      builder: (context, value, child) {
+        return TextField(
+          controller: controller,
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            labelText: hintText,
+            labelStyle:
+                const TextStyle(color: Colors.grey), // Color de la etiqueta
+            prefixIcon: Icon(icon, color: Colors.grey), // Color del ícono
+            suffixIcon:
+                value.text.isNotEmpty // Mostrar el ícono solo si hay texto
+                    ? suffixIcon
+                    : null,
+            border: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.grey
+                    .shade300, // Borde gris claro solo en la parte inferior
+              ),
+            ),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color:
+                    Colors.grey.shade300, // Borde gris claro para estado normal
+              ),
+            ),
+            focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(
+                color:
+                    Colors.orange, // Borde color naranja cuando está enfocado
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

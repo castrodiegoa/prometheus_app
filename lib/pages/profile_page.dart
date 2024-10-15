@@ -39,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 CustomInputField(
                   hintText: 'Número de documento',
                   controller: _controller.documentNumberController,
-                  icon: Icons.numbers,
+                  icon: Icons.numbers_outlined,
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 20),
@@ -58,14 +58,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 CustomInputField(
                   hintText: 'Número de teléfono',
                   controller: _controller.phoneController,
-                  icon: Icons.phone,
+                  icon: Icons.phone_outlined,
                   keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 20),
                 CustomInputField(
                   hintText: 'Correo electrónico',
                   controller: _controller.emailController,
-                  icon: Icons.email,
+                  icon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 20),
@@ -119,6 +119,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 controller: _controller.currentPasswordController,
                 icon: Icons.lock,
                 obscureText: true,
+                suffixIcon: IconButton(
+                  icon: const Icon(
+                    Icons.visibility_outlined,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    // Acción para mostrar/ocultar contraseña
+                  },
+                ),
               ),
               const SizedBox(height: 20),
               CustomInputField(
@@ -126,6 +135,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 controller: _controller.newPasswordController,
                 icon: Icons.lock_outline,
                 obscureText: true,
+                suffixIcon: IconButton(
+                  icon: const Icon(
+                    Icons.visibility_outlined,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    // Acción para mostrar/ocultar contraseña
+                  },
+                ),
               ),
               const SizedBox(height: 20),
               CustomInputField(
@@ -133,6 +151,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 controller: _controller.confirmPasswordController,
                 icon: Icons.lock_outline,
                 obscureText: true,
+                suffixIcon: IconButton(
+                  icon: const Icon(
+                    Icons.visibility_outlined,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    // Acción para mostrar/ocultar contraseña
+                  },
+                ),
               ),
             ],
           ),

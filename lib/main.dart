@@ -9,7 +9,7 @@ import 'package:prometheus_app/pages/home_page.dart';
 import 'package:prometheus_app/pages/auth/find_your_account.dart';
 import 'package:prometheus_app/pages/auth/confirm_your_account.dart';
 import 'package:prometheus_app/pages/auth/create_new_password.dart';
-import 'package:prometheus_app/pages/primera_descarga_introduccion.dart'; // Importa la página de introducción
+import 'package:prometheus_app/pages/onboarding_page.dart'; // Importa la página de introducción
 
 void main() async {
   await GetStorage.init(); // Inicializa GetStorage
@@ -49,11 +49,11 @@ class MyApp extends StatelessWidget {
         ),
         GetPage(
           name: '/onboarding',
-          page: () => OnboardingPage(),
+          page: () => const OnboardingPage(),
         ), // Página de Onboarding
         GetPage(
           name: '/home',
-          page: () => HomePage(),
+          page: () => const HomePage(),
         ), // Página principal
         GetPage(
           name: '/forgot-password',

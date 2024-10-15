@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:prometheus_app/pages/payments_plan_1.dart';
 import 'package:prometheus_app/pages/profile_page.dart';
 import '../controllers/controlador_propiedad.dart';
 import '../controllers/controlador_usuario.dart';
 import 'rentas_pag.dart';
-import 'buscar_page.dart';
 import 'notifi_page.dart';
 import '../controllers/auth_controller.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -23,8 +25,8 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    HomePageContent(), // Contenido de la página de inicio
-    BuscarPage(),
+    HomePageContent(),
+    const PaymentPlanManagement(),
     NotificacionesPage(),
     ProfilePage(),
   ];
@@ -42,7 +44,7 @@ class _HomePageState extends State<HomePage> {
         title: Obx(() => Text(usuarioController.obtenerNombreUsuario())),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: () {
               _authController.signOut(); // Llamar al método de cerrar sesión
             },
@@ -54,8 +56,8 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped, // Cambia de página al hacer clic
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
+        selectedItemColor: Colors.orange,
+        unselectedItemColor: Colors.grey,
         showSelectedLabels: true,
         showUnselectedLabels: false,
         items: const <BottomNavigationBarItem>[
