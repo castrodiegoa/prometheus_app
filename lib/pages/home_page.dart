@@ -5,7 +5,7 @@ import 'package:prometheus_app/pages/profile_page.dart';
 import '../controllers/controlador_propiedad.dart';
 import '../controllers/controlador_usuario.dart';
 import 'rentas_pag.dart';
-import 'notifi_page.dart';
+import 'notification_page.dart';
 import '../controllers/auth_controller.dart';
 
 class HomePage extends StatefulWidget {
@@ -104,22 +104,22 @@ class HomePageContent extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Row(
+                const Row(
                   children: [
                     Icon(Icons.insert_chart, size: 40),
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Recents logs: (user) ha (action) un registro de (entity name) con id (id entity) el (date).',
+                        'Registros recientes: (user) ha (action) un registro de (entity name) con id (id entity) el (date).',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 TextButton(
                   onPressed: () {},
-                  child: Text('Sell All Logs',
+                  child: const Text('Ver todos los registros',
                       style: TextStyle(color: Colors.orange)),
                 ),
               ],
@@ -183,7 +183,7 @@ class HomePageContent extends StatelessWidget {
         CircleAvatar(
           radius: 30,
           backgroundColor: Colors.grey.shade200,
-          child: Icon(icon, size: 30, color: Colors.teal),
+          child: Icon(icon, size: 30, color: Colors.black),
         ),
         const SizedBox(height: 6),
         Text(title, style: TextStyle(fontWeight: FontWeight.bold)),

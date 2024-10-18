@@ -50,8 +50,8 @@ class PaymentPlanDetails extends StatelessWidget {
                   itemCount: rentPayments.length,
                   itemBuilder: (context, index) {
                     final payment = rentPayments[index];
-                    String month =
-                        DateFormat('MMMM', 'es_ES').format(payment.date);
+                    //String month =
+                    //  DateFormat('MMMM', 'es_ES').format(payment.date);
                     String amount =
                         NumberFormat.currency(locale: 'es_CO', symbol: '\$')
                             .format(payment.amount);
@@ -59,12 +59,13 @@ class PaymentPlanDetails extends StatelessWidget {
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 16.0),
-                      leading: const CircleAvatar(
-                        backgroundColor: Colors.pink,
-                        child: Icon(Icons.receipt_long, color: Colors.white),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.pink.shade100,
+                        child: Icon(Icons.receipt_long_outlined,
+                            color: Colors.pink.shade400),
                       ),
                       title: Text(
-                        month,
+                        '${DateFormat('MMMM', 'es_ES').format(payment.date)[0].toUpperCase()}${DateFormat('MMMM', 'es_ES').format(payment.date).substring(1)}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(amount),

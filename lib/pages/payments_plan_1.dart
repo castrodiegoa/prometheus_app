@@ -5,7 +5,7 @@ import 'package:prometheus_app/database/mock_data.dart';
 import 'package:prometheus_app/pages/payments_plan_details_2.dart'; // Asegúrate de importar la vista de detalles
 
 class PaymentPlanManagement extends StatelessWidget {
-  const PaymentPlanManagement({Key? key}) : super(key: key);
+  const PaymentPlanManagement({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,22 +52,6 @@ class PaymentPlanManagement extends StatelessWidget {
                 ],
               ),
 
-              // Botón de eliminar en grupo
-              Row(
-                children: [
-                  const Text('Eliminar en grupo'),
-                  const Spacer(),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Acción de eliminar
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                    ),
-                    child: const Text('Eliminar'),
-                  ),
-                ],
-              ),
               const SizedBox(height: 16.0),
 
               // Lista de arriendos
@@ -79,9 +63,10 @@ class PaymentPlanManagement extends StatelessWidget {
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 16.0),
-                      leading: const CircleAvatar(
-                        backgroundColor: Colors.pink,
-                        child: Icon(Icons.receipt_long, color: Colors.white),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.pink.shade100,
+                        child: Icon(Icons.receipt_long_outlined,
+                            color: Colors.pink.shade400),
                       ),
                       title: Text(
                         'Alquiler ${payment.idRent}',
@@ -105,20 +90,6 @@ class PaymentPlanManagement extends StatelessWidget {
                       },
                     );
                   },
-                ),
-              ),
-
-              // Botón de nuevo arriendo
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Acción para agregar nuevo arriendo
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                  ),
-                  child: const Text('Nuevo'),
                 ),
               ),
             ],

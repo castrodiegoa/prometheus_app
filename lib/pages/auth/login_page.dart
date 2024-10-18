@@ -5,7 +5,7 @@ import '../../widgets/custom_input_field.dart';
 import '../../widgets/custom_button.dart';
 
 class LoginPage extends StatelessWidget {
-  final AuthController _authController = Get.put(AuthController());
+  final AuthController _authController = Get.find<AuthController>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
