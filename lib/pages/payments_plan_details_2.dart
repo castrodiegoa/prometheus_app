@@ -22,7 +22,7 @@ class PaymentPlanDetails extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined),
           onPressed: () {
             Get.back();
           },
@@ -50,30 +50,52 @@ class PaymentPlanDetails extends StatelessWidget {
                   itemCount: rentPayments.length,
                   itemBuilder: (context, index) {
                     final payment = rentPayments[index];
-                    //String month =
-                    //  DateFormat('MMMM', 'es_ES').format(payment.date);
+                    //String month = DateFormat('MMMM', 'es_ES').format(payment.date);
                     String amount =
                         NumberFormat.currency(locale: 'es_CO', symbol: '\$')
                             .format(payment.amount);
 
-                    return ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 16.0),
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.pink.shade100,
-                        child: Icon(Icons.receipt_long_outlined,
-                            color: Colors.pink.shade400),
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8.0,
+                          horizontal: 16.0), // Margen alrededor del contenedor
+                      decoration: BoxDecoration(
+                        color: Colors.white, // Fondo blanco
+                        borderRadius:
+                            BorderRadius.circular(12.0), // Bordes redondeados
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                Colors.grey.withOpacity(0.3), // Sombra ligera
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(
+                                0, 3), // Desplazamiento de la sombra
+                          ),
+                        ],
                       ),
-                      title: Text(
-                        '${DateFormat('MMMM', 'es_ES').format(payment.date)[0].toUpperCase()}${DateFormat('MMMM', 'es_ES').format(payment.date).substring(1)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 8.0,
+                            horizontal: 16.0), // Padding interno del ListTile
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.pink.shade100,
+                          child: Icon(Icons.receipt_long_outlined,
+                              color:
+                                  Colors.pink.shade400), // Ícono personalizado
+                        ),
+                        title: Text(
+                          '${DateFormat('MMMM', 'es_ES').format(payment.date)[0].toUpperCase()}${DateFormat('MMMM', 'es_ES').format(payment.date).substring(1)}',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold), // Estilo de título
+                        ),
+                        subtitle: Text(amount),
+                        onTap: () {
+                          // Navegar a la vista de detalle del mes
+                          Get.to(() => PaymentMonthDetail(
+                              payment: payment, rentId: rentId));
+                        },
                       ),
-                      subtitle: Text(amount),
-                      onTap: () {
-                        // Navegar a la vista de detalle del mes
-                        Get.to(() => PaymentMonthDetail(
-                            payment: payment, rentId: rentId));
-                      },
                     );
                   },
                 ),

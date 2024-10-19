@@ -92,6 +92,8 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  void _updateFullName(String newName) {}
+
   Widget _buildChangePasswordText(BuildContext context) {
     return Center(
       child: GestureDetector(
