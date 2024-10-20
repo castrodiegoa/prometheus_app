@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:prometheus_app/pages/payments_plan_1.dart';
 import 'package:prometheus_app/pages/profile_page.dart';
+import 'package:prometheus_app/pages/buscar_page.dart';
 import '../controllers/controlador_propiedad.dart';
 
 import 'rentas_pag.dart';
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     HomePageContent(),
-    const PaymentPlanManagement(),
+    BuscarPage(),
     NotificacionesPage(),
     ProfilePage(),
   ];
@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bienvenido!'),
+        title: const Text('Prometheus'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
