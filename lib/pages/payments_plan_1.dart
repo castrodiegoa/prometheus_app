@@ -5,6 +5,7 @@ import 'package:prometheus_app/database/mock_data.dart';
 import 'package:prometheus_app/pages/payments_plan_details_2.dart'; // Asegúrate de importar la vista de detalles
 
 class PaymentPlanManagement extends StatelessWidget {
+  //Vista de pagos principal
   const PaymentPlanManagement({Key? key}) : super(key: key);
 
   @override
