@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:prometheus_app/pages/profile_page.dart';
+import 'package:prometheus_app/pages/buscar_page.dart';
 import '../controllers/controlador_propiedad.dart';
-import '../controllers/controlador_usuario.dart';
+
 import 'rentas_pag.dart';
-import 'buscar_page.dart';
-import 'notifi_page.dart';
+import 'notifications_page.dart';
 import '../controllers/auth_controller.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -18,12 +20,11 @@ class _HomePageState extends State<HomePage> {
       Get.find(); // Obtener el controlador de autenticación
   final PropiedadController propiedadController =
       Get.put(PropiedadController());
-  final UsuarioController usuarioController = Get.put(UsuarioController());
 
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    HomePageContent(), // Contenido de la página de inicio
+    HomePageContent(),
     BuscarPage(),
     NotificacionesPage(),
     ProfilePage(),
@@ -39,10 +40,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Obx(() => Text(usuarioController.obtenerNombreUsuario())),
+        title: const Text('Prometheus'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: () {
               _authController.signOut(); // Llamar al método de cerrar sesión
             },
@@ -54,8 +55,8 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped, // Cambia de página al hacer clic
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
+        selectedItemColor: Colors.orange,
+        unselectedItemColor: Colors.grey,
         showSelectedLabels: true,
         showUnselectedLabels: false,
         items: const <BottomNavigationBarItem>[
@@ -84,7 +85,7 @@ class _HomePageState extends State<HomePage> {
 // Contenido de la página de inicio (antes PaginaInicio)
 class HomePageContent extends StatelessWidget {
   final PropiedadController propiedadController = Get.find();
-  final UsuarioController usuarioController = Get.find();
+  //final UsuarioController usuarioController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -95,39 +96,39 @@ class HomePageContent extends StatelessWidget {
         children: [
           // Banner de registros recientes
           Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.green.shade100,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
               children: [
-                Row(
+                const Row(
                   children: [
-                    Icon(Icons.insert_chart, size: 40),
+                    Icon(Icons.insert_chart_outlined_rounded, size: 40),
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Recents logs: (user) ha (action) un registro de (entity name) con id (id entity) el (date).',
+                        'Registros recientes: (user) ha (action) un registro de (entity name) con id (id entity) el (date).',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 TextButton(
                   onPressed: () {},
-                  child: Text('Sell All Logs',
+                  child: const Text('Ver todos los registros',
                       style: TextStyle(color: Colors.orange)),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           // Sección de acceso rápido
-          Text('Acceso rápido',
+          const Text('Acceso rápido',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -181,10 +182,10 @@ class HomePageContent extends StatelessWidget {
         CircleAvatar(
           radius: 30,
           backgroundColor: Colors.grey.shade200,
-          child: Icon(icon, size: 30, color: Colors.teal),
+          child: Icon(icon, size: 30, color: Colors.black),
         ),
         const SizedBox(height: 6),
-        Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -198,13 +199,14 @@ class HomePageContent extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(logs),
             ],
           ),
           TextButton(
             onPressed: () {},
-            child: Text('Ver más', style: TextStyle(color: Colors.orange)),
+            child:
+                const Text('Ver más', style: TextStyle(color: Colors.orange)),
           ),
         ],
       ),

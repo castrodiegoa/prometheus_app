@@ -1,45 +1,68 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Payment {
-  String id;
-  DateTime date;
-  double amount;
+  final int id;
+  final double amount;
+  final DateTime date;
+  final DateTime createdAt;
+  final DateTime updatedAt;
   bool isRentPaid;
   bool isWaterPaid;
   bool isEnergyPaid;
   bool isGasPaid;
-  DateTime? createdAt;
-  String rentId;
 
-  // Constructor
+  // Nuevas propiedades para almacenar los recibos (pueden ser URLs o rutas de archivos)
+  String? rentReceipt;
+  String? waterReceipt;
+  String? energyReceipt;
+  String? gasReceipt;
+
+  // Propiedad adicional para el ID del alquiler
+  final String rentId;
+
   Payment({
     required this.id,
-    required this.date,
     required this.amount,
-    required this.isRentPaid,
-    required this.isWaterPaid,
-    required this.isEnergyPaid,
-    required this.isGasPaid,
-    this.createdAt,
+    required this.date,
+    required this.createdAt,
+    required this.updatedAt,
+    this.isRentPaid = false,
+    this.isWaterPaid = false,
+    this.isEnergyPaid = false,
+    this.isGasPaid = false,
+
+    // Inicializamos los recibos en null si no hay ninguno
+    this.rentReceipt,
+    this.waterReceipt,
+    this.energyReceipt,
+    this.gasReceipt,
+
+    // Propiedad rentId
     required this.rentId,
   });
 
   // Factory para crear un objeto Payment desde Firestore (deserialización)
   factory Payment.fromFirestore(DocumentSnapshot data) {
     return Payment(
-      id: data['id'] ?? '', // Se obtiene el id desde la data de Firestore
+      id: data['id'] ?? 0, // Se obtiene el id desde la data de Firestore
       date: (data['date'] as Timestamp)
-          .toDate(), // Se asume que date es un Timestamp
-      amount: data['amount']?.toDouble() ?? 0.0, // Asegurarse de que sea double
+          .toDate(), // Convertir Timestamp a DateTime
+      amount: (data['amount'] as num?)?.toDouble() ?? 0.0, // Convertir a double
       isRentPaid: data['isRentPaid'] ?? false, // Asegurarse de que sea un bool
       isWaterPaid:
           data['isWaterPaid'] ?? false, // Asegurarse de que sea un bool
       isEnergyPaid:
           data['isEnergyPaid'] ?? false, // Asegurarse de que sea un bool
       isGasPaid: data['isGasPaid'] ?? false, // Asegurarse de que sea un bool
-      createdAt: data['createdAt'] != null
-          ? (data['createdAt'] as Timestamp).toDate()
-          : null,
+      createdAt:
+          (data['createdAt'] as Timestamp).toDate(), // Convertir Timestamp
+      updatedAt:
+          (data['updatedAt'] as Timestamp).toDate(), // Convertir Timestamp
+      rentReceipt: data['rentReceipt'], // URL o string del recibo de alquiler
+      waterReceipt: data['waterReceipt'], // URL o string del recibo del agua
+      energyReceipt:
+          data['energyReceipt'], // URL o string del recibo de la energía
+      gasReceipt: data['gasReceipt'], // URL o string del recibo del gas
       rentId: data['rentId'] ?? '', // ID del alquiler
     );
   }
@@ -54,7 +77,14 @@ class Payment {
       'isWaterPaid': isWaterPaid,
       'isEnergyPaid': isEnergyPaid,
       'isGasPaid': isGasPaid,
-      'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
+      'createdAt':
+          Timestamp.fromDate(createdAt), // Convertir DateTime a Timestamp
+      'updatedAt':
+          Timestamp.fromDate(updatedAt), // Convertir DateTime a Timestamp
+      'rentReceipt': rentReceipt, // Guardar URL o string
+      'waterReceipt': waterReceipt, // Guardar URL o string
+      'energyReceipt': energyReceipt, // Guardar URL o string
+      'gasReceipt': gasReceipt, // Guardar URL o string
       'rentId': rentId, // Se incluye el id del alquiler
     };
   }

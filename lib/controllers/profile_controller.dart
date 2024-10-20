@@ -90,13 +90,13 @@ class ProfileController extends GetxController {
     try {
       await _service.changePassword(currentPassword, newPassword);
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Contraseña cambiada correctamente.')));
+          const SnackBar(content: Text('Contraseña cambiada correctamente.')));
       Navigator.of(context).pop();
       currentPasswordController.clear();
       newPasswordController.clear();
       confirmPasswordController.clear();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
               'Error al cambiar la contraseña. Verifica la contraseña actual.')));
     }

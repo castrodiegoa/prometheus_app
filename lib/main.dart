@@ -9,14 +9,16 @@ import 'package:prometheus_app/pages/home_page.dart';
 import 'package:prometheus_app/pages/auth/find_your_account.dart';
 import 'package:prometheus_app/pages/auth/confirm_your_account.dart';
 import 'package:prometheus_app/pages/auth/create_new_password.dart';
-import 'package:prometheus_app/pages/primera_descarga_introduccion.dart'; // Importa la página de introducción
+import 'package:prometheus_app/controllers/auth_controller.dart';
+import 'package:prometheus_app/pages/onboarding_page.dart'; // Importa la página de introducción
 
 void main() async {
-  await GetStorage.init(); // Inicializa GetStorage
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await GetStorage.init(); // Inicializa GetStorage
+  Get.put(AuthController()); // Registrar el AuthController
 
   runApp(const MyApp());
 }
@@ -26,7 +28,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final box = GetStorage(); // Accede a la instancia de GetStorage
+    final box = GetStorage();
+    final authController = Get.find<AuthController>();
     bool hasSeenOnboarding = box.read('hasSeenOnboarding') ?? false;
 
     return GetMaterialApp(
@@ -36,37 +39,26 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.orange,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      // Verifica si ya se mostró el onboarding o no
-      initialRoute: hasSeenOnboarding ? '/home' : '/onboarding',
+      home: Obx(() {
+        // Si el usuario está autenticado
+        if (authController.user.value != null) {
+          return const HomePage();
+        }
+        // Si no ha visto el onboarding
+        if (!hasSeenOnboarding) {
+          return const OnboardingPage();
+        }
+        // Por defecto, mostrar login
+        return LoginPage();
+      }),
       getPages: [
-        GetPage(
-          name: '/login',
-          page: () => LoginPage(),
-        ),
-        GetPage(
-          name: '/register',
-          page: () => RegisterPage(),
-        ),
-        GetPage(
-          name: '/onboarding',
-          page: () => OnboardingPage(),
-        ), // Página de Onboarding
-        GetPage(
-          name: '/home',
-          page: () => HomePage(),
-        ), // Página principal
-        GetPage(
-          name: '/forgot-password',
-          page: () => FindAccountScreen(),
-        ),
-        GetPage(
-          name: '/confirm-account',
-          page: () => ConfirmAccountScreen(),
-        ),
-        GetPage(
-          name: '/create-password',
-          page: () => NewPasswordScreen(),
-        ),
+        GetPage(name: '/login', page: () => LoginPage()),
+        GetPage(name: '/register', page: () => RegisterPage()),
+        GetPage(name: '/onboarding', page: () => const OnboardingPage()),
+        GetPage(name: '/home', page: () => const HomePage()),
+        GetPage(name: '/forgot-password', page: () => FindAccountScreen()),
+        GetPage(name: '/confirm-account', page: () => ConfirmAccountScreen()),
+        GetPage(name: '/create-password', page: () => NewPasswordScreen()),
       ],
     );
   }

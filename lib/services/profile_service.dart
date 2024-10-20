@@ -94,4 +94,23 @@ class ProfileService {
       }
     }
   }
+
+  Future<String> getFullName() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          String firstName = userDoc['firstName'] ?? '';
+          String lastName = userDoc['lastName'] ?? '';
+          return '$firstName $lastName'; // Devolver nombre completo
+        }
+      } catch (e) {
+        print('Error obteniendo el nombre completo: $e');
+        throw e;
+      }
+    }
+    return '';
+  }
 }

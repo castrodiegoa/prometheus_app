@@ -5,7 +5,7 @@ import '../../widgets/custom_input_field.dart';
 import '../../widgets/custom_button.dart';
 
 class LoginPage extends StatelessWidget {
-  final AuthController _authController = Get.put(AuthController());
+  final AuthController _authController = Get.find<AuthController>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -30,7 +30,7 @@ class LoginPage extends StatelessWidget {
               CustomInputField(
                 hintText: 'Correo electrónico',
                 controller: _emailController,
-                icon: Icons.email,
+                icon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 20),
@@ -38,8 +38,17 @@ class LoginPage extends StatelessWidget {
               CustomInputField(
                 hintText: 'Contraseña',
                 controller: _passwordController,
-                icon: Icons.lock,
-                obscureText: true, // Ocultar el texto
+                icon: Icons.lock_outline,
+                obscureText: true,
+                suffixIcon: IconButton(
+                  icon: const Icon(
+                    Icons.visibility_outlined,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    // Acción para mostrar/ocultar contraseña
+                  },
+                ),
               ),
               const SizedBox(height: 10),
               Align(
