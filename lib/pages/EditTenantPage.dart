@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-class EditEntityPage extends StatelessWidget {
-  final String entityType;
+class EditTenantPage extends StatelessWidget {
+  final String entityType = 'Inquilinos';
   final String entityId;
   final Map<String, dynamic> entityData;
 
-  EditEntityPage({
-    required this.entityType,
+  EditTenantPage({
     required this.entityId,
     required this.entityData,
   });
@@ -16,7 +15,7 @@ class EditEntityPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          entityType, // Muestra el tipo de entidad (Propiedades, Alquileres, Inquilinos)
+          entityType, // Muestra el tipo de entidad (Inquilinos)
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
@@ -35,26 +34,24 @@ class EditEntityPage extends StatelessWidget {
           children: [
             SizedBox(height: 20),
 
-            // Mostrando la información del alquiler, propiedad o inquilino
-            _buildInfoField(
-                'Fecha de inicio', entityData['start_date'] ?? 'No disponible'),
-            _buildInfoField(
-                'Fecha de fin', entityData['end_date'] ?? 'No disponible'),
+            // Mostrando la información del inquilino
             _buildInfoField('ID', entityId),
-            _buildInfoField('Monto', entityData['amount'] ?? 'No disponible'),
-            _buildInfoField('Número de personas',
-                entityData['total_persons']?.toString() ?? 'No disponible'),
-            _buildInfoField('Inquilino', entityData['tenant'] ?? 'Desconocido'),
             _buildInfoField(
-                'Propiedad', entityData['property'] ?? 'Sin propiedad'),
-            _buildInfoField('Estado', entityData['status'] ?? 'Sin estado'),
-            _buildInfoField('Contrato', 'Descargar'),
-            _buildInfoField('Número de meses de alquiler',
-                entityData['months_of_rent']?.toString() ?? 'No disponible'),
+                'Documento', entityData['document'] ?? 'No disponible'),
             _buildInfoField(
-                'Creado en', entityData['created_at'] ?? 'No disponible'),
+                'Nombre', entityData['first_name'] ?? 'No disponible'),
             _buildInfoField(
-                'Actualizado en', entityData['updated_at'] ?? 'No disponible'),
+                'Apellido', entityData['last_name'] ?? 'No disponible'),
+            _buildInfoField('Teléfono principal',
+                entityData['primary_phone_number'] ?? 'No disponible'),
+            _buildInfoField('Teléfono secundario',
+                entityData['secondary_phone_number'] ?? 'No disponible'),
+            _buildInfoField(
+                'Correo electrónico', entityData['email'] ?? 'No disponible'),
+            _buildInfoField('Fecha de creación',
+                entityData['created_at'] ?? 'No disponible'),
+            _buildInfoField('Fecha de actualización',
+                entityData['updated_at'] ?? 'No disponible'),
 
             Spacer(),
 

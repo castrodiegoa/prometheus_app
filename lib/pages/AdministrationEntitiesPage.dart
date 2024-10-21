@@ -1,24 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:prometheus_app/pages/NewRentPage.dart'; // Asegúrate de importar la página NewRentPage
-import 'package:prometheus_app/pages/EditEntityPage.dart';  // La página de edición también debe estar importada
+import 'package:prometheus_app/pages/new_rent_page.dart'; // Importar NewRentPage
+import 'package:prometheus_app/pages/new_tenant_page.dart'; // Importar NewRentPage
+import 'package:prometheus_app/pages/new_property_page.dart'; // Importar NewRentPage
+import 'package:prometheus_app/pages/EditEntityPage.dart'; // Importar EditEntityPage
+import 'package:prometheus_app/pages/EditPropertyPage.dart'; // Importar EditPropertyPage
+import 'package:prometheus_app/pages/EditTenantPage.dart'; // Importar EditTenantPage
 
 class AdministrationEntitiesPage extends StatelessWidget {
   final String sectionTitle;
+  final List<Map<String, String>>
+      items; // Lista de elementos según la sección seleccionada
 
-  AdministrationEntitiesPage({required this.sectionTitle});
+  AdministrationEntitiesPage({required this.sectionTitle, required this.items});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // Fondo blanco
       appBar: AppBar(
-        title: Text(
-          sectionTitle,
-          style: TextStyle(color: Colors.black),
+        title: Center(
+          child: Text(
+            sectionTitle,
+            style: TextStyle(color: Colors.black),
+          ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -36,7 +45,7 @@ class AdministrationEntitiesPage extends StatelessWidget {
               ),
               child: TextField(
                 decoration: InputDecoration(
-                  hintText: 'Search $sectionTitle',
+                  hintText: 'Buscar $sectionTitle',
                   border: InputBorder.none,
                   prefixIcon: Icon(Icons.search, color: Colors.grey),
                   suffixIcon: Icon(Icons.close, color: Colors.grey),
@@ -49,144 +58,130 @@ class AdministrationEntitiesPage extends StatelessWidget {
 
             // Fila de filtro y botón de configuración
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Sorter',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                const Text(
+                  'Filtrar',
+                  style: TextStyle(fontSize: 16.0),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Mostrar el modal de filtros
-                    showModalBottomSheet(
-                      context: context,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(25.0),
-                        ),
-                      ),
-                      builder: (BuildContext context) {
-                        return _buildFilterModal(context);
-                      },
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(12),
-                    backgroundColor: Colors.orange,
+                const Spacer(),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.orange, // Fondo naranja
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Bordes redondeados
                   ),
-                  child: Icon(Icons.tune, color: Colors.white),
+                  child: IconButton(
+                    icon: const Icon(Icons.tune,
+                        color: Colors.white), // Ícono blanco de filtro
+                    onPressed: () {
+                      // Mostrar el modal de filtros
+                      showModalBottomSheet(
+                        context: context,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(25.0),
+                          ),
+                        ),
+                        builder: (BuildContext context) {
+                          return _buildFilterModal(context);
+                        },
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
+
             SizedBox(height: 20),
 
             // Lista de items correspondientes a la sección seleccionada
             Expanded(
-              child: ListView(
-                children: [
-                  SectionCard(
-                    icon: Icons.home,
-                    title: 'Properties',
-                    logs: 2,
-                    updateTime: '06h',
-                    backgroundColor: Colors.orange,
+              child: ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  return SectionCard(
+                    icon: Icons.receipt_long_outlined,
+                    title: item['title'] ??
+                        'Sin título', // Asegurarse de que no sea nulo
+                    description: item['description'] ?? 'Sin descripción',
+                    backgroundColor:
+                        Colors.pink.shade100, // Cambiar color según la sección
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditEntityPage(
-                            entityType: 'Properties',
-                            entityId: '090410',
-                            entityData: {
-                              'start_date': '13/07/2024',
-                              'end_date': '13/07/2025',
-                              'amount': '\$500.000',
-                              'total_persons': '4',
-                              'tenant': 'José Guillén',
-                              'property': 'Casa 2x2 Calle 32',
-                              'status': 'Activo',
-                              'months_of_rent': '12',
-                              'created_at': '13/07/2024',
-                              'updated_at': '13/07/2024'
-                            },
+                      if (sectionTitle == 'Propiedades') {
+                        // Navegar a la página de edición de Propiedades
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditPropertyPage(
+                              entityId: item['title'] ??
+                                  '0', // Asegurarse de que no sea nulo
+                              entityData: item,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                  SectionCard(
-                    icon: Icons.apartment,
-                    title: 'Rentals',
-                    logs: 4,
-                    updateTime: '25d',
-                    backgroundColor: Colors.orange,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditEntityPage(
-                            entityType: 'Rentals',
-                            entityId: '090410',
-                            entityData: {
-                              'start_date': '13/07/2024',
-                              'end_date': '13/07/2025',
-                              'amount': '\$500.000',
-                              'total_persons': '4',
-                              'tenant': 'José Guillén',
-                              'property': 'Casa 2x2 Calle 32',
-                              'status': 'Activo',
-                              'months_of_rent': '12',
-                              'created_at': '13/07/2024',
-                              'updated_at': '13/07/2024'
-                            },
+                        );
+                      } else if (sectionTitle == 'Inquilinos') {
+                        // Navegar a la página de edición de Inquilinos
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditTenantPage(
+                              entityId: item['title'] ??
+                                  '0', // Asegurarse de que no sea nulo
+                              entityData: item,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                  SectionCard(
-                    icon: Icons.person,
-                    title: 'Tenants',
-                    logs: 10,
-                    updateTime: '23h',
-                    backgroundColor: Colors.orange,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditEntityPage(
-                            entityType: 'Tenants',
-                            entityId: '090410',
-                            entityData: {
-                              'start_date': '13/07/2024',
-                              'end_date': '13/07/2025',
-                              'amount': '\$500.000',
-                              'total_persons': '4',
-                              'tenant': 'José Guillén',
-                              'property': 'Casa 2x2 Calle 32',
-                              'status': 'Activo',
-                              'months_of_rent': '12',
-                              'created_at': '13/07/2024',
-                              'updated_at': '13/07/2024'
-                            },
+                        );
+                      } else if (sectionTitle == 'Rentals' ||
+                          sectionTitle == 'Alquileres') {
+                        // Navegar a la página de edición de Alquileres
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditEntityPage(
+                              entityType: 'Alquileres',
+                              entityId: item['title'] ??
+                                  '0', // Asegurarse de que no sea nulo
+                              entityData: item,
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
-                  ),
-                  // Agrega más items si es necesario
-                ],
+                  );
+                },
               ),
             ),
 
-            // Botón "New" en la parte inferior
+            // Botón "Nuevo"
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => NewRentPage()), // Navegar a la página de nuevo alquiler
-                );
+                if (sectionTitle == 'Propiedades') {
+                  // Navegar a la página de nuevo propiedad
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewPropertyPage(),
+                    ),
+                  );
+                } else if (sectionTitle == 'Inquilinos') {
+                  // Navegar a la página de nuevo inquilino
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewTenantPage(),
+                    ),
+                  );
+                } else if (sectionTitle == 'Rentals' ||
+                    sectionTitle == 'Alquileres') {
+                  // Navegar a la página de nuevo alquiler
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewRentPage(),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
@@ -194,11 +189,12 @@ class AdministrationEntitiesPage extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  'New',
+                  'Nuevo',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
+
             SizedBox(height: 20),
           ],
         ),
@@ -221,7 +217,7 @@ class AdministrationEntitiesPage extends StatelessWidget {
         children: [
           // Título centrado
           Text(
-            'Set Filters',
+            'Aplicar Filtros',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -230,12 +226,12 @@ class AdministrationEntitiesPage extends StatelessWidget {
           ),
           SizedBox(height: 20),
 
-          // Dropdown de filtro (solo diseño por el momento)
+          // Dropdown de filtro
           Row(
             children: [
               Expanded(
                 child: Text(
-                  'Property',
+                  'Propiedad',
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -243,7 +239,7 @@ class AdministrationEntitiesPage extends StatelessWidget {
                 child: DropdownButton<String>(
                   isExpanded: true,
                   value: 'ID',
-                  items: <String>['ID', 'Name', 'Date'].map((String value) {
+                  items: <String>['ID', 'Nombre', 'Fecha'].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -261,15 +257,14 @@ class AdministrationEntitiesPage extends StatelessWidget {
           // Botón de aplicar filtros
           ElevatedButton(
             onPressed: () {
-              // Acción al aplicar los filtros
               Navigator.pop(context); // Cerrar el modal
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange, // Cambiado de 'primary' a 'backgroundColor'
+              backgroundColor: Colors.orange,
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
             ),
             child: Text(
-              'Apply Filters',
+              'Aplicar Filtros',
               style: TextStyle(fontSize: 16, color: Colors.white),
             ),
           ),
@@ -282,16 +277,14 @@ class AdministrationEntitiesPage extends StatelessWidget {
 class SectionCard extends StatelessWidget {
   final IconData icon;
   final String title;
-  final int logs;
-  final String updateTime;
+  final String description;
   final Color backgroundColor;
   final VoidCallback onTap;
 
   SectionCard({
     required this.icon,
     required this.title,
-    required this.logs,
-    required this.updateTime,
+    required this.description,
     required this.backgroundColor,
     required this.onTap,
   });
@@ -317,17 +310,15 @@ class SectionCard extends StatelessWidget {
         leading: CircleAvatar(
           radius: 24,
           backgroundColor: backgroundColor,
-          child: Icon(icon, color: Colors.white, size: 24),
+          child: Icon(icon, color: Colors.pink.shade400, size: 24),
         ),
         title: Text(
-          '$logs logs - $title',
+          title,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
-        subtitle: Text('Updated at $updateTime'),
+        subtitle: Text(description),
         onTap: onTap,
       ),
     );
   }
 }
-
-

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:prometheus_app/pages/profile_page.dart';
 import 'package:prometheus_app/pages/buscar_page.dart';
+import 'package:prometheus_app/pages/AdministrationEntitiesPage.dart';
 import '../controllers/controlador_propiedad.dart';
-
-import 'rentas_pag.dart';
 import 'notifications_page.dart';
 import '../controllers/auth_controller.dart';
+import 'package:prometheus_app/pages/payments_plan_1.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -109,7 +109,7 @@ class HomePageContent extends StatelessWidget {
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Registros recientes: (user) ha (action) un registro de (entity name) con id (id entity) el (date).',
+                        'Registros recientes: José Guillén ha eliminado un registro de propiedades con id 090417 el 10/05/2024.',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -134,25 +134,78 @@ class HomePageContent extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  Get.to(() => RentasPage());
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdministrationEntitiesPage(
+                        sectionTitle: 'Alquileres',
+                        items: [
+                          {
+                            'title': 'Alquiler 90410',
+                            'description': 'Desde 10/01/2023 Hasta 10/01/2024'
+                          },
+                          {
+                            'title': 'Alquiler 90411',
+                            'description': 'Desde 11/01/2023 Hasta 11/01/2024'
+                          },
+                        ],
+                      ),
+                    ),
+                  );
                 },
-                child: _quickAccessButton('Rentas', Icons.home_work),
+                child: _quickAccessButton('Alquileres', Icons.home_work),
               ),
               GestureDetector(
                 onTap: () {
                   // Acción al presionar el botón de Inquilinos
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdministrationEntitiesPage(
+                        sectionTitle: 'Inquilinos',
+                        items: [
+                          {
+                            'title': 'Inquilino José Guillén',
+                            'description': 'Contrato desde 10/01/2023'
+                          },
+                          {
+                            'title': 'Inquilino María Ramírez',
+                            'description': 'Contrato desde 12/01/2023'
+                          },
+                        ],
+                      ),
+                    ),
+                  );
                 },
                 child: _quickAccessButton('Inquilinos', Icons.people),
               ),
               GestureDetector(
                 onTap: () {
                   // Acción al presionar el botón de Pagos
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaymentPlanManagement(),
+                    ),
+                  );
                 },
                 child: _quickAccessButton('Pagos', Icons.attach_money),
               ),
               GestureDetector(
                 onTap: () {
                   // Acción al presionar el botón de Propiedades
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdministrationEntitiesPage(
+                        sectionTitle: 'Propiedades',
+                        items: [
+                          {'title': 'Propiedad 90410'},
+                          {'title': 'Propiedad 90411'},
+                        ],
+                      ),
+                    ),
+                  );
                 },
                 child: _quickAccessButton('Propiedades', Icons.house),
               ),
