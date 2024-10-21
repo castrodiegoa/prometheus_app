@@ -6,7 +6,7 @@ class NotificacionesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Notifications',
+          'Notificaciones',
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,

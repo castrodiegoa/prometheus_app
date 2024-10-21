@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prometheus_app/pages/payments_plan_1.dart';
-import 'package:prometheus_app/pages/AdministrationEntitiesPage.dart';
+import 'package:prometheus_app/pages/payments_plan_1.dart'; // Importación de Payments Plan
+import 'package:prometheus_app/pages/AdministrationEntitiesPage.dart'; // Importar AdministrationEntitiesPage
 
 class BuscarPage extends StatefulWidget {
   @override
@@ -11,21 +11,16 @@ class _BuscarPageState extends State<BuscarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // Fondo blanco
       appBar: AppBar(
-        title: Text(
-          'Administration',
-          style: TextStyle(color: Colors.black),
+        title: Center(
+          child: Text(
+            'Administración', // Título centrado
+            style: TextStyle(color: Colors.black),
+          ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {
-              // Acción para el ícono de notificaciones
-            },
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -39,7 +34,7 @@ class _BuscarPageState extends State<BuscarPage> {
               ),
               child: TextField(
                 decoration: InputDecoration(
-                  hintText: 'Search',
+                  hintText: 'Buscar',
                   border: InputBorder.none,
                   prefixIcon: Icon(Icons.search, color: Colors.grey),
                   suffixIcon: Icon(Icons.close, color: Colors.grey),
@@ -55,7 +50,7 @@ class _BuscarPageState extends State<BuscarPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Sorter',
+                  'Filtrar',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 ElevatedButton(
@@ -79,7 +74,7 @@ class _BuscarPageState extends State<BuscarPage> {
                 children: [
                   SectionCard(
                     icon: Icons.home,
-                    title: 'Properties',
+                    title: 'Propiedades',
                     logs: 2,
                     updateTime: '06h',
                     backgroundColor: Colors.orange,
@@ -87,15 +82,20 @@ class _BuscarPageState extends State<BuscarPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              AdministrationEntitiesPage(sectionTitle: 'Properties'),
+                          builder: (context) => AdministrationEntitiesPage(
+                            sectionTitle: 'Propiedades',
+                            items: [
+                              {'title': 'Propiedad 90410', 'description': 'Desde 10/01/2023 Hasta 10/01/2024'},
+                              {'title': 'Propiedad 90411', 'description': 'Desde 11/01/2023 Hasta 11/01/2024'},
+                            ],
+                          ),
                         ),
                       );
                     },
                   ),
                   SectionCard(
                     icon: Icons.apartment,
-                    title: 'Rentals',
+                    title: 'Alquileres',
                     logs: 4,
                     updateTime: '25d',
                     backgroundColor: Colors.orange,
@@ -103,15 +103,20 @@ class _BuscarPageState extends State<BuscarPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              AdministrationEntitiesPage(sectionTitle: 'Rentals'),
+                          builder: (context) => AdministrationEntitiesPage(
+                            sectionTitle: 'Alquileres',
+                            items: [
+                              {'title': 'Alquiler 90410', 'description': 'Desde 10/01/2023 Hasta 10/01/2024'},
+                              {'title': 'Alquiler 90411', 'description': 'Desde 11/01/2023 Hasta 11/01/2024'},
+                            ],
+                          ),
                         ),
                       );
                     },
                   ),
                   SectionCard(
                     icon: Icons.person,
-                    title: 'Tenants',
+                    title: 'Inquilinos',
                     logs: 10,
                     updateTime: '23h',
                     backgroundColor: Colors.orange,
@@ -119,17 +124,22 @@ class _BuscarPageState extends State<BuscarPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              AdministrationEntitiesPage(sectionTitle: 'Tenants'),
+                          builder: (context) => AdministrationEntitiesPage(
+                            sectionTitle: 'Inquilinos',
+                            items: [
+                              {'title': 'Inquilino José Guillén', 'description': 'Contrato desde 10/01/2023'},
+                              {'title': 'Inquilino María Ramírez', 'description': 'Contrato desde 12/01/2023'},
+                            ],
+                          ),
                         ),
                       );
                     },
                   ),
                   SectionCard(
                     icon: Icons.attach_money,
-                    title: 'Payments Plan',
+                    title: 'Plan de Pagos', // Manteniendo el título de Plan de Pagos
                     logs: 80,
-                    updateTime: '1y',
+                    updateTime: 'Hace 1 año',
                     backgroundColor: Colors.orange,
                     onTap: () {
                       Navigator.push(
@@ -191,10 +201,10 @@ class SectionCard extends StatelessWidget {
           child: Icon(icon, color: Colors.white, size: 24),
         ),
         title: Text(
-          '$logs logs - $title',
+          '$logs registros - $title',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
-        subtitle: Text('Updated at $updateTime'),
+        subtitle: Text('Actualizado hace $updateTime'),
         onTap: onTap,
       ),
     );
