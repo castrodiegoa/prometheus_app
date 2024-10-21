@@ -21,7 +21,7 @@ class EditTenantPage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -36,14 +36,22 @@ class EditTenantPage extends StatelessWidget {
 
             // Mostrando la información del inquilino
             _buildInfoField('ID', entityId),
-            _buildInfoField('Documento', entityData['document'] ?? 'No disponible'),
-            _buildInfoField('Nombre', entityData['first_name'] ?? 'No disponible'),
-            _buildInfoField('Apellido', entityData['last_name'] ?? 'No disponible'),
-            _buildInfoField('Teléfono principal', entityData['primary_phone_number'] ?? 'No disponible'),
-            _buildInfoField('Teléfono secundario', entityData['secondary_phone_number'] ?? 'No disponible'),
-            _buildInfoField('Correo electrónico', entityData['email'] ?? 'No disponible'),
-            _buildInfoField('Fecha de creación', entityData['created_at'] ?? 'No disponible'),
-            _buildInfoField('Fecha de actualización', entityData['updated_at'] ?? 'No disponible'),
+            _buildInfoField(
+                'Documento', entityData['document'] ?? 'No disponible'),
+            _buildInfoField(
+                'Nombre', entityData['first_name'] ?? 'No disponible'),
+            _buildInfoField(
+                'Apellido', entityData['last_name'] ?? 'No disponible'),
+            _buildInfoField('Teléfono principal',
+                entityData['primary_phone_number'] ?? 'No disponible'),
+            _buildInfoField('Teléfono secundario',
+                entityData['secondary_phone_number'] ?? 'No disponible'),
+            _buildInfoField(
+                'Correo electrónico', entityData['email'] ?? 'No disponible'),
+            _buildInfoField('Fecha de creación',
+                entityData['created_at'] ?? 'No disponible'),
+            _buildInfoField('Fecha de actualización',
+                entityData['updated_at'] ?? 'No disponible'),
 
             Spacer(),
 

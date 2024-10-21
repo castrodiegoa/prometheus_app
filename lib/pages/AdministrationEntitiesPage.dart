@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:prometheus_app/pages/NewRentPage.dart'; // Importar NewRentPage
+import 'package:prometheus_app/pages/new_rent_page.dart'; // Importar NewRentPage
+import 'package:prometheus_app/pages/new_tenant_page.dart'; // Importar NewRentPage
+import 'package:prometheus_app/pages/new_property_page.dart'; // Importar NewRentPage
 import 'package:prometheus_app/pages/EditEntityPage.dart'; // Importar EditEntityPage
 import 'package:prometheus_app/pages/EditPropertyPage.dart'; // Importar EditPropertyPage
 import 'package:prometheus_app/pages/EditTenantPage.dart'; // Importar EditTenantPage
 
 class AdministrationEntitiesPage extends StatelessWidget {
   final String sectionTitle;
-  final List<Map<String, String>> items; // Lista de elementos según la sección seleccionada
+  final List<Map<String, String>>
+      items; // Lista de elementos según la sección seleccionada
 
   AdministrationEntitiesPage({required this.sectionTitle, required this.items});
 
@@ -24,7 +27,7 @@ class AdministrationEntitiesPage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -55,36 +58,40 @@ class AdministrationEntitiesPage extends StatelessWidget {
 
             // Fila de filtro y botón de configuración
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Filtrar',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 16.0),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Mostrar el modal de filtros
-                    showModalBottomSheet(
-                      context: context,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(25.0),
-                        ),
-                      ),
-                      builder: (BuildContext context) {
-                        return _buildFilterModal(context);
-                      },
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(12),
-                    backgroundColor: Colors.orange,
+                const Spacer(),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.orange, // Fondo naranja
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Bordes redondeados
                   ),
-                  child: Icon(Icons.tune, color: Colors.white),
+                  child: IconButton(
+                    icon: const Icon(Icons.tune,
+                        color: Colors.white), // Ícono blanco de filtro
+                    onPressed: () {
+                      // Mostrar el modal de filtros
+                      showModalBottomSheet(
+                        context: context,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(25.0),
+                          ),
+                        ),
+                        builder: (BuildContext context) {
+                          return _buildFilterModal(context);
+                        },
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
+
             SizedBox(height: 20),
 
             // Lista de items correspondientes a la sección seleccionada
@@ -94,10 +101,12 @@ class AdministrationEntitiesPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final item = items[index];
                   return SectionCard(
-                    icon: Icons.assignment,
-                    title: item['title'] ?? 'Sin título', // Asegurarse de que no sea nulo
+                    icon: Icons.receipt_long_outlined,
+                    title: item['title'] ??
+                        'Sin título', // Asegurarse de que no sea nulo
                     description: item['description'] ?? 'Sin descripción',
-                    backgroundColor: Colors.pinkAccent, // Cambiar color según la sección
+                    backgroundColor:
+                        Colors.pink.shade100, // Cambiar color según la sección
                     onTap: () {
                       if (sectionTitle == 'Propiedades') {
                         // Navegar a la página de edición de Propiedades
@@ -105,7 +114,8 @@ class AdministrationEntitiesPage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditPropertyPage(
-                              entityId: item['title'] ?? '0', // Asegurarse de que no sea nulo
+                              entityId: item['title'] ??
+                                  '0', // Asegurarse de que no sea nulo
                               entityData: item,
                             ),
                           ),
@@ -116,19 +126,22 @@ class AdministrationEntitiesPage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditTenantPage(
-                              entityId: item['title'] ?? '0', // Asegurarse de que no sea nulo
+                              entityId: item['title'] ??
+                                  '0', // Asegurarse de que no sea nulo
                               entityData: item,
                             ),
                           ),
                         );
-                      } else if (sectionTitle == 'Rentals' || sectionTitle == 'Alquileres') {
+                      } else if (sectionTitle == 'Rentals' ||
+                          sectionTitle == 'Alquileres') {
                         // Navegar a la página de edición de Alquileres
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditEntityPage(
                               entityType: 'Alquileres',
-                              entityId: item['title'] ?? '0', // Asegurarse de que no sea nulo
+                              entityId: item['title'] ??
+                                  '0', // Asegurarse de que no sea nulo
                               entityData: item,
                             ),
                           ),
@@ -143,12 +156,32 @@ class AdministrationEntitiesPage extends StatelessWidget {
             // Botón "Nuevo"
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NewRentPage(), // Navegar a NewRentPage
-                  ),
-                );
+                if (sectionTitle == 'Propiedades') {
+                  // Navegar a la página de nuevo propiedad
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewPropertyPage(),
+                    ),
+                  );
+                } else if (sectionTitle == 'Inquilinos') {
+                  // Navegar a la página de nuevo inquilino
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewTenantPage(),
+                    ),
+                  );
+                } else if (sectionTitle == 'Rentals' ||
+                    sectionTitle == 'Alquileres') {
+                  // Navegar a la página de nuevo alquiler
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewRentPage(),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
@@ -161,6 +194,7 @@ class AdministrationEntitiesPage extends StatelessWidget {
                 ),
               ),
             ),
+
             SizedBox(height: 20),
           ],
         ),
@@ -276,7 +310,7 @@ class SectionCard extends StatelessWidget {
         leading: CircleAvatar(
           radius: 24,
           backgroundColor: backgroundColor,
-          child: Icon(icon, color: Colors.white, size: 24),
+          child: Icon(icon, color: Colors.pink.shade400, size: 24),
         ),
         title: Text(
           title,
@@ -288,9 +322,3 @@ class SectionCard extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-

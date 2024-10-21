@@ -47,22 +47,22 @@ class _BuscarPageState extends State<BuscarPage> {
 
             // Fila de filtro y botón de configuración
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Filtrar',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Acción para el botón de filtro
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(12),
-                    backgroundColor: Colors.orange,
+                const Text('Filtrar', style: TextStyle(fontSize: 16.0)),
+                const Spacer(),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.orange, // Fondo naranja
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Bordes redondeados
                   ),
-                  child: Icon(Icons.tune, color: Colors.white),
+                  child: IconButton(
+                    icon: const Icon(Icons.tune,
+                        color: Colors.white), // Ícono blanco de filtro
+                    onPressed: () {
+                      // Acción para el filtro
+                    },
+                  ),
                 ),
               ],
             ),
@@ -73,7 +73,7 @@ class _BuscarPageState extends State<BuscarPage> {
               child: ListView(
                 children: [
                   SectionCard(
-                    icon: Icons.home,
+                    icon: Icons.house,
                     title: 'Propiedades',
                     logs: 2,
                     updateTime: '06h',
@@ -85,8 +85,8 @@ class _BuscarPageState extends State<BuscarPage> {
                           builder: (context) => AdministrationEntitiesPage(
                             sectionTitle: 'Propiedades',
                             items: [
-                              {'title': 'Propiedad 90410', 'description': 'Desde 10/01/2023 Hasta 10/01/2024'},
-                              {'title': 'Propiedad 90411', 'description': 'Desde 11/01/2023 Hasta 11/01/2024'},
+                              {'title': 'Propiedad 90410'},
+                              {'title': 'Propiedad 90411'},
                             ],
                           ),
                         ),
@@ -94,7 +94,7 @@ class _BuscarPageState extends State<BuscarPage> {
                     },
                   ),
                   SectionCard(
-                    icon: Icons.apartment,
+                    icon: Icons.home_work,
                     title: 'Alquileres',
                     logs: 4,
                     updateTime: '25d',
@@ -106,8 +106,16 @@ class _BuscarPageState extends State<BuscarPage> {
                           builder: (context) => AdministrationEntitiesPage(
                             sectionTitle: 'Alquileres',
                             items: [
-                              {'title': 'Alquiler 90410', 'description': 'Desde 10/01/2023 Hasta 10/01/2024'},
-                              {'title': 'Alquiler 90411', 'description': 'Desde 11/01/2023 Hasta 11/01/2024'},
+                              {
+                                'title': 'Alquiler 90410',
+                                'description':
+                                    'Desde 10/01/2023 Hasta 10/01/2024'
+                              },
+                              {
+                                'title': 'Alquiler 90411',
+                                'description':
+                                    'Desde 11/01/2023 Hasta 11/01/2024'
+                              },
                             ],
                           ),
                         ),
@@ -115,7 +123,7 @@ class _BuscarPageState extends State<BuscarPage> {
                     },
                   ),
                   SectionCard(
-                    icon: Icons.person,
+                    icon: Icons.people,
                     title: 'Inquilinos',
                     logs: 10,
                     updateTime: '23h',
@@ -127,8 +135,14 @@ class _BuscarPageState extends State<BuscarPage> {
                           builder: (context) => AdministrationEntitiesPage(
                             sectionTitle: 'Inquilinos',
                             items: [
-                              {'title': 'Inquilino José Guillén', 'description': 'Contrato desde 10/01/2023'},
-                              {'title': 'Inquilino María Ramírez', 'description': 'Contrato desde 12/01/2023'},
+                              {
+                                'title': 'Inquilino José Guillén',
+                                'description': 'Contrato desde 10/01/2023'
+                              },
+                              {
+                                'title': 'Inquilino María Ramírez',
+                                'description': 'Contrato desde 12/01/2023'
+                              },
                             ],
                           ),
                         ),
@@ -137,7 +151,8 @@ class _BuscarPageState extends State<BuscarPage> {
                   ),
                   SectionCard(
                     icon: Icons.attach_money,
-                    title: 'Plan de Pagos', // Manteniendo el título de Plan de Pagos
+                    title:
+                        'Plan de Pagos', // Manteniendo el título de Plan de Pagos
                     logs: 80,
                     updateTime: 'Hace 1 año',
                     backgroundColor: Colors.orange,
@@ -201,7 +216,7 @@ class SectionCard extends StatelessWidget {
           child: Icon(icon, color: Colors.white, size: 24),
         ),
         title: Text(
-          '$logs registros - $title',
+          title,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         subtitle: Text('Actualizado hace $updateTime'),
@@ -210,4 +225,3 @@ class SectionCard extends StatelessWidget {
     );
   }
 }
-

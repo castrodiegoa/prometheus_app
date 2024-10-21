@@ -22,7 +22,7 @@ class EditEntityPage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -36,18 +36,25 @@ class EditEntityPage extends StatelessWidget {
             SizedBox(height: 20),
 
             // Mostrando la información del alquiler, propiedad o inquilino
-            _buildInfoField('Fecha de inicio', entityData['start_date'] ?? 'No disponible'),
-            _buildInfoField('Fecha de fin', entityData['end_date'] ?? 'No disponible'),
+            _buildInfoField(
+                'Fecha de inicio', entityData['start_date'] ?? 'No disponible'),
+            _buildInfoField(
+                'Fecha de fin', entityData['end_date'] ?? 'No disponible'),
             _buildInfoField('ID', entityId),
             _buildInfoField('Monto', entityData['amount'] ?? 'No disponible'),
-            _buildInfoField('Número de personas', entityData['total_persons']?.toString() ?? 'No disponible'),
+            _buildInfoField('Número de personas',
+                entityData['total_persons']?.toString() ?? 'No disponible'),
             _buildInfoField('Inquilino', entityData['tenant'] ?? 'Desconocido'),
-            _buildInfoField('Propiedad', entityData['property'] ?? 'Sin propiedad'),
+            _buildInfoField(
+                'Propiedad', entityData['property'] ?? 'Sin propiedad'),
             _buildInfoField('Estado', entityData['status'] ?? 'Sin estado'),
             _buildInfoField('Contrato', 'Descargar'),
-            _buildInfoField('Número de meses de alquiler', entityData['months_of_rent']?.toString() ?? 'No disponible'),
-            _buildInfoField('Creado en', entityData['created_at'] ?? 'No disponible'),
-            _buildInfoField('Actualizado en', entityData['updated_at'] ?? 'No disponible'),
+            _buildInfoField('Número de meses de alquiler',
+                entityData['months_of_rent']?.toString() ?? 'No disponible'),
+            _buildInfoField(
+                'Creado en', entityData['created_at'] ?? 'No disponible'),
+            _buildInfoField(
+                'Actualizado en', entityData['updated_at'] ?? 'No disponible'),
 
             Spacer(),
 
@@ -110,5 +117,3 @@ class EditEntityPage extends StatelessWidget {
     );
   }
 }
-
-

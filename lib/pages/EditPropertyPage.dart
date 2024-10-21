@@ -20,7 +20,7 @@ class EditPropertyPage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -37,7 +37,8 @@ class EditPropertyPage extends StatelessWidget {
             _buildInfoField('Nombre', entityData['name'] ?? 'N/A'),
             _buildInfoField('Descripción', entityData['description'] ?? 'N/A'),
             _buildInfoField('Dirección', entityData['address'] ?? 'N/A'),
-            _buildInfoField('¿Está Rentada?', entityData['is_rented']?.toString() ?? 'No especificado'),
+            _buildInfoField('¿Está Rentada?',
+                entityData['is_rented']?.toString() ?? 'No especificado'),
             _buildInfoField('ID Propiedad', entityId),
 
             Spacer(),
@@ -101,4 +102,3 @@ class EditPropertyPage extends StatelessWidget {
     );
   }
 }
-
