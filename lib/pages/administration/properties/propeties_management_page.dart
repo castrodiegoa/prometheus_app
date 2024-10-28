@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:prometheus_app/pages/new_rent_page.dart'; // Importar NewRentPage
-import 'package:prometheus_app/pages/new_tenant_page.dart'; // Importar NewRentPage
-import 'package:prometheus_app/pages/new_property_page.dart'; // Importar NewRentPage
-import 'package:prometheus_app/pages/EditEntityPage.dart'; // Importar EditEntityPage
-import 'package:prometheus_app/pages/EditPropertyPage.dart'; // Importar EditPropertyPage
-import 'package:prometheus_app/pages/EditTenantPage.dart'; // Importar EditTenantPage
+import 'package:prometheus_app/pages/administration/properties/new_property_page.dart'; // Importar NewPropertyPage
+import 'package:prometheus_app/pages/administration/properties/edit_property_page.dart'; // Importar EditPropertyPage
 
-class AdministrationEntitiesPage extends StatelessWidget {
-  final String sectionTitle;
-  final List<Map<String, String>>
-      items; // Lista de elementos según la sección seleccionada
+class PropertiesManagementPage extends StatelessWidget {
+  final List<Map<String, String>> properties = [
+    {'title': 'Propiedad 90410'},
+    {'title': 'Propiedad 90411'},
+  ]; // Lista de propiedades
 
-  AdministrationEntitiesPage({required this.sectionTitle, required this.items});
+  PropertiesManagementPage();
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +17,7 @@ class AdministrationEntitiesPage extends StatelessWidget {
       appBar: AppBar(
         title: Center(
           child: Text(
-            sectionTitle,
+            'Propiedades',
             style: TextStyle(color: Colors.black),
           ),
         ),
@@ -45,7 +42,7 @@ class AdministrationEntitiesPage extends StatelessWidget {
               ),
               child: TextField(
                 decoration: InputDecoration(
-                  hintText: 'Buscar $sectionTitle',
+                  hintText: 'Buscar propiedad',
                   border: InputBorder.none,
                   prefixIcon: Icon(Icons.search, color: Colors.grey),
                   suffixIcon: Icon(Icons.close, color: Colors.grey),
@@ -91,97 +88,47 @@ class AdministrationEntitiesPage extends StatelessWidget {
                 ),
               ],
             ),
-
             SizedBox(height: 20),
 
-            // Lista de items correspondientes a la sección seleccionada
+            // Lista de propiedades
             Expanded(
               child: ListView.builder(
-                itemCount: items.length,
+                itemCount: properties.length,
                 itemBuilder: (context, index) {
-                  final item = items[index];
+                  final property = properties[index];
                   return SectionCard(
-                    icon: Icons.receipt_long_outlined,
-                    title: item['title'] ??
-                        'Sin título', // Asegurarse de que no sea nulo
-                    description: item['description'] ?? 'Sin descripción',
-                    backgroundColor:
-                        Colors.pink.shade100, // Cambiar color según la sección
+                    icon: Icons.home_outlined,
+                    title: property['title'] ??
+                        'Sin nombre', // Nombre de la propiedad
+                    description: property['description'] ??
+                        'Sin descripción', // Descripción de la propiedad
+                    backgroundColor: Colors.blue.shade100, // Color azul claro
                     onTap: () {
-                      if (sectionTitle == 'Propiedades') {
-                        // Navegar a la página de edición de Propiedades
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditPropertyPage(
-                              entityId: item['title'] ??
-                                  '0', // Asegurarse de que no sea nulo
-                              entityData: item,
-                            ),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditPropertyPage(
+                            entityId: property['id'] ??
+                                '0', // Asegurarse de que no sea nulo
+                            entityData: property,
                           ),
-                        );
-                      } else if (sectionTitle == 'Inquilinos') {
-                        // Navegar a la página de edición de Inquilinos
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditTenantPage(
-                              entityId: item['title'] ??
-                                  '0', // Asegurarse de que no sea nulo
-                              entityData: item,
-                            ),
-                          ),
-                        );
-                      } else if (sectionTitle == 'Rentals' ||
-                          sectionTitle == 'Alquileres') {
-                        // Navegar a la página de edición de Alquileres
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditEntityPage(
-                              entityType: 'Alquileres',
-                              entityId: item['title'] ??
-                                  '0', // Asegurarse de que no sea nulo
-                              entityData: item,
-                            ),
-                          ),
-                        );
-                      }
+                        ),
+                      );
                     },
                   );
                 },
               ),
             ),
 
-            // Botón "Nuevo"
+            // Botón "Nueva Propiedad"
             ElevatedButton(
               onPressed: () {
-                if (sectionTitle == 'Propiedades') {
-                  // Navegar a la página de nuevo propiedad
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewPropertyPage(),
-                    ),
-                  );
-                } else if (sectionTitle == 'Inquilinos') {
-                  // Navegar a la página de nuevo inquilino
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewTenantPage(),
-                    ),
-                  );
-                } else if (sectionTitle == 'Rentals' ||
-                    sectionTitle == 'Alquileres') {
-                  // Navegar a la página de nuevo alquiler
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewRentPage(),
-                    ),
-                  );
-                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NewPropertyPage(),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
@@ -189,12 +136,11 @@ class AdministrationEntitiesPage extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  'Nuevo',
+                  'Nueva Propiedad',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
-
             SizedBox(height: 20),
           ],
         ),
@@ -231,15 +177,16 @@ class AdministrationEntitiesPage extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Propiedad',
+                  'Tipo de Propiedad',
                   style: TextStyle(fontSize: 16),
                 ),
               ),
               Expanded(
                 child: DropdownButton<String>(
                   isExpanded: true,
-                  value: 'ID',
-                  items: <String>['ID', 'Nombre', 'Fecha'].map((String value) {
+                  value: 'Casa',
+                  items: <String>['Casa', 'Apartamento', 'Oficina']
+                      .map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -310,7 +257,7 @@ class SectionCard extends StatelessWidget {
         leading: CircleAvatar(
           radius: 24,
           backgroundColor: backgroundColor,
-          child: Icon(icon, color: Colors.pink.shade400, size: 24),
+          child: Icon(icon, color: Colors.blue.shade400, size: 24),
         ),
         title: Text(
           title,

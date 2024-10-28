@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart'; // Necesario para inicializar los formatos de fechas locales
 import 'package:prometheus_app/database/mock_data.dart';
-import 'package:prometheus_app/pages/payment_month_detail_3.dart'; // Importar la vista del detalle de pagos del mes
+import 'package:prometheus_app/pages/administration/payments/payment_month_detail_page.dart'; // Importar la vista del detalle de pagos del mes
 
 class PaymentPlanDetails extends StatelessWidget {
   final int rentId;

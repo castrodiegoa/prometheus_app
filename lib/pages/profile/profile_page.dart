@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../widgets/custom_input_field.dart';
-import '../../widgets/custom_button.dart';
+import '../../widgets/custom_input_field.dart';
+import '../../../widgets/custom_button.dart';
 import 'package:prometheus_app/controllers/profile_controller.dart';
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }

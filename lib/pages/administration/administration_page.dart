@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:prometheus_app/pages/payments_plan_1.dart'; // Importación de Payments Plan
-import 'package:prometheus_app/pages/AdministrationEntitiesPage.dart'; // Importar AdministrationEntitiesPage
+import '../administration/tenants/tenant_management_page.dart';
+import 'payments/payments_management_page.dart';
+import '../administration/properties/propeties_management_page.dart';
+import '../administration/rents/rents_management_page.dart';
 
 class BuscarPage extends StatefulWidget {
+  const BuscarPage({super.key});
+
   @override
   _BuscarPageState createState() => _BuscarPageState();
 }
@@ -11,11 +15,11 @@ class _BuscarPageState extends State<BuscarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo blanco
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Center(
           child: Text(
-            'Administración', // Título centrado
+            'Administración',
             style: TextStyle(color: Colors.black),
           ),
         ),
@@ -52,13 +56,11 @@ class _BuscarPageState extends State<BuscarPage> {
                 const Spacer(),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.orange, // Fondo naranja
-                    borderRadius:
-                        BorderRadius.circular(12.0), // Bordes redondeados
+                    color: Colors.orange,
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.tune,
-                        color: Colors.white), // Ícono blanco de filtro
+                    icon: const Icon(Icons.tune, color: Colors.white),
                     onPressed: () {
                       // Acción para el filtro
                     },
@@ -82,13 +84,7 @@ class _BuscarPageState extends State<BuscarPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AdministrationEntitiesPage(
-                            sectionTitle: 'Propiedades',
-                            items: [
-                              {'title': 'Propiedad 90410'},
-                              {'title': 'Propiedad 90411'},
-                            ],
-                          ),
+                          builder: (context) => PropertiesManagementPage(),
                         ),
                       );
                     },
@@ -103,21 +99,7 @@ class _BuscarPageState extends State<BuscarPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AdministrationEntitiesPage(
-                            sectionTitle: 'Alquileres',
-                            items: [
-                              {
-                                'title': 'Alquiler 90410',
-                                'description':
-                                    'Desde 10/01/2023 Hasta 10/01/2024'
-                              },
-                              {
-                                'title': 'Alquiler 90411',
-                                'description':
-                                    'Desde 11/01/2023 Hasta 11/01/2024'
-                              },
-                            ],
-                          ),
+                          builder: (context) => RentsManagementPage(),
                         ),
                       );
                     },
@@ -132,27 +114,14 @@ class _BuscarPageState extends State<BuscarPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AdministrationEntitiesPage(
-                            sectionTitle: 'Inquilinos',
-                            items: [
-                              {
-                                'title': 'Inquilino José Guillén',
-                                'description': 'Contrato desde 10/01/2023'
-                              },
-                              {
-                                'title': 'Inquilino María Ramírez',
-                                'description': 'Contrato desde 12/01/2023'
-                              },
-                            ],
-                          ),
+                          builder: (context) => TenantsManagementPage(),
                         ),
                       );
                     },
                   ),
                   SectionCard(
                     icon: Icons.attach_money,
-                    title:
-                        'Plan de Pagos', // Manteniendo el título de Plan de Pagos
+                    title: 'Plan de Pagos',
                     logs: 80,
                     updateTime: 'Hace 1 año',
                     backgroundColor: Colors.orange,
@@ -160,10 +129,18 @@ class _BuscarPageState extends State<BuscarPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PaymentPlanManagement(),
+                          builder: (context) => const PaymentPlanManagement(),
                         ),
                       );
                     },
+                  ),
+                  SectionCard(
+                    icon: Icons.attach_money,
+                    title: 'Registros de auditoría',
+                    logs: 80,
+                    updateTime: 'Hace 02h',
+                    backgroundColor: Colors.orange,
+                    onTap: () {},
                   ),
                 ],
               ),

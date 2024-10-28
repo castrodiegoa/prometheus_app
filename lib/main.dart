@@ -5,12 +5,12 @@ import 'package:prometheus_app/pages/auth/login_page.dart';
 import 'package:prometheus_app/pages/auth/register_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:prometheus_app/firebase_options.dart';
-import 'package:prometheus_app/pages/home_page.dart';
+import 'package:prometheus_app/pages/home/home_page.dart';
 import 'package:prometheus_app/pages/auth/find_your_account.dart';
 import 'package:prometheus_app/pages/auth/confirm_your_account.dart';
 import 'package:prometheus_app/pages/auth/create_new_password.dart';
 import 'package:prometheus_app/controllers/auth_controller.dart';
-import 'package:prometheus_app/pages/onboarding_page.dart'; // Importa la página de introducción
+import 'package:prometheus_app/pages/introduction/onboarding_page.dart'; // Importa la página de introducción
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
