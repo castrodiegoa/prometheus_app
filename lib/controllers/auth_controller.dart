@@ -1,4 +1,4 @@
-import 'package:prometheus_app/pages/home_page.dart';
+import 'package:prometheus_app/pages/home/home_page.dart';
 import 'package:prometheus_app/pages/auth/login_page.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';

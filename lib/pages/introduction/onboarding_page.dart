@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../widgets/custom_button.dart';
+import '../../widgets/custom_button.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});

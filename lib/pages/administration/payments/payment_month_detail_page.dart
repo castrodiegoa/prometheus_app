@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:prometheus_app/widgets/custom_button.dart';
 import 'dart:io';
-import '../database/mock_data.dart';
+import '../../../database/mock_data.dart';
 
 class PaymentMonthDetail extends StatefulWidget {
   final Payment payment;

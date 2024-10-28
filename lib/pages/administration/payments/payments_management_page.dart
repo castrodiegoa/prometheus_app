@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:prometheus_app/database/mock_data.dart';
-import 'package:prometheus_app/pages/payments_plan_details_2.dart'; // Asegúrate de importar la vista de detalles
+import 'package:prometheus_app/pages/administration/payments/payments_plan_details_page.dart'; // Asegúrate de importar la vista de detalles
 
 class PaymentPlanManagement extends StatefulWidget {
   const PaymentPlanManagement({super.key});

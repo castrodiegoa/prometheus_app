@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
-class EditEntityPage extends StatelessWidget {
-  final String entityType;
+class EditRentPage extends StatelessWidget {
   final String entityId;
   final Map<String, dynamic> entityData;
 
-  EditEntityPage({
-    required this.entityType,
+  EditRentPage({
     required this.entityId,
     required this.entityData,
   });
@@ -16,7 +14,7 @@ class EditEntityPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          entityType, // Muestra el tipo de entidad (Propiedades, Alquileres, Inquilinos)
+          'Editar Renta', // Muestra el tipo de entidad (Propiedades, Alquileres, Inquilinos)
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
