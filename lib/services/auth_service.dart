@@ -28,8 +28,9 @@ class FirebaseService {
           'firstName': firstName,
           'lastName': lastName,
           'phoneNumber': phoneNumber,
-          'email': email,
+          //'email': email,
           'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
         });
       }
       return user;

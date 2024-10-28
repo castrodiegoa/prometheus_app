@@ -30,13 +30,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+     
   get:
   firebase_auth:
   firebase_core:
   firebase_storage:
   get_storage:
   cloud_firestore:
+  file_picker:
+  image_picker:
+  intl:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -70,6 +73,9 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/Icon-Prometheus-128px.png
+    - assets/imagen1.png
+    - assets/imagen2.png
+    - assets/imagen3.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

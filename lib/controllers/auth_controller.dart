@@ -1,5 +1,5 @@
-import 'package:prometheus_app/pages/home_page.dart';
-import 'package:prometheus_app/pages/login_page.dart';
+import 'package:prometheus_app/pages/home/home_page.dart';
+import 'package:prometheus_app/pages/auth/login_page.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_storage/get_storage.dart'; // Importar GetStorage
@@ -9,11 +9,16 @@ class AuthController extends GetxController {
   final FirebaseService _firebaseService = FirebaseService();
   var isLoading = false.obs; // Observa si se está cargando una operación
   var user = Rxn<User>(); // Observa el estado del usuario
+
   final storage =
       GetStorage(); // Crear una instancia de GetStorage para almacenar las credenciales
+
   @override
   void onInit() {
     super.onInit();
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      this.user.value = user;
+    });
     _autoLogin(); // Intentar login automático al iniciar
   }
 
@@ -28,7 +33,7 @@ class AuthController extends GetxController {
       if (newUser != null) {
         user.value = newUser; // Usuario registrado exitosamente
         await _saveCredentials(email, password); // Guardar credenciales
-        Get.offAll(() => HomePage()); // Redirigir a la vista principal
+        Get.offAll(() => const HomePage()); // Redirigir a la vista principal
       } else {
         Get.snackbar("Error", "No se pudo registrar el usuario");
       }
@@ -48,7 +53,7 @@ class AuthController extends GetxController {
       if (loggedInUser != null) {
         user.value = loggedInUser; // Usuario inició sesión exitosamente
         await _saveCredentials(email, password); // Guardar credenciales
-        Get.offAll(() => HomePage()); // Redirigir a la vista principal
+        Get.offAll(() => const HomePage()); // Redirigir a la vista principal
       } else {
         Get.snackbar("Error", "No se pudo iniciar sesión");
       }
@@ -76,10 +81,15 @@ class AuthController extends GetxController {
 
   // Intentar login automático
   Future<void> _autoLogin() async {
-    String? email = storage.read('email');
-    String? password = storage.read('password');
-    if (email != null && password != null) {
-      await login(email, password); // Auto login con credenciales guardadas
+    try {
+      String? email = storage.read('email');
+      String? password = storage.read('password');
+      if (email != null && password != null) {
+        isLoading.value = true;
+        await login(email, password);
+      }
+    } finally {
+      isLoading.value = false;
     }
   }
 
