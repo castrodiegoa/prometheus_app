@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:prometheus_app/controllers/tenant_controller.dart';
 import 'package:prometheus_app/models/tenant_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class EditTenantPage extends StatefulWidget {
