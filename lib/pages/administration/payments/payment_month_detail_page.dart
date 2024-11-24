@@ -232,18 +232,17 @@ class _PaymentMonthDetailState extends State<PaymentMonthDetail> {
       String label, bool value, Function(bool?) onChanged) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center, // Alineación vertical
       children: [
         Expanded(
-          child: Row(
-            children: [
-              Text(label,
-                  style: const TextStyle(fontSize: 16.0, color: Colors.grey)),
-              Checkbox(
-                value: value,
-                onChanged: onChanged,
-              ),
-            ],
+          child: Text(
+            label,
+            style: const TextStyle(fontSize: 16.0, color: Colors.grey),
           ),
+        ),
+        Checkbox(
+          value: value,
+          onChanged: onChanged,
         ),
       ],
     );
@@ -294,23 +293,6 @@ class _PaymentMonthDetailState extends State<PaymentMonthDetail> {
             ),
           ],
         ),
-
-        // Mostrar imagen o texto si se ha cargado un recibo
-        // receiptImage != null
-        //     ? Padding(
-        //         padding: const EdgeInsets.only(left: 16.0),
-        //         child: Image.file(
-        //           receiptImage,
-        //           height: 100.0,
-        //         ),
-        //       )
-        //     : const Padding(
-        //         padding: EdgeInsets.only(left: 16.0),
-        //         child: Text(
-        //           'No se ha cargado ningún recibo',
-        //           style: TextStyle(fontSize: 14.0, color: Colors.redAccent),
-        //         ),
-        //       ),
       ],
     );
   }

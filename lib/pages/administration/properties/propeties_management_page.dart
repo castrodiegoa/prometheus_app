@@ -1,30 +1,60 @@
 import 'package:flutter/material.dart';
-import 'package:prometheus_app/pages/administration/properties/new_property_page.dart'; // Importar NewPropertyPage
-import 'package:prometheus_app/pages/administration/properties/edit_property_page.dart'; // Importar EditPropertyPage
+import 'package:prometheus_app/controllers/property_controller.dart';
+import 'package:prometheus_app/models/property_model.dart';
+import 'package:prometheus_app/pages/administration/properties/new_property_page.dart';
+import 'package:prometheus_app/pages/administration/properties/edit_property_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class PropertiesManagementPage extends StatelessWidget {
-  final List<Map<String, String>> properties = [
-    {'title': 'Propiedad 90410'},
-    {'title': 'Propiedad 90411'},
-  ]; // Lista de propiedades
+class PropertiesManagementPage extends StatefulWidget {
+  @override
+  _TenantsManagementPageState createState() => _TenantsManagementPageState();
+}
 
-  PropertiesManagementPage();
+class _TenantsManagementPageState extends State<PropertiesManagementPage> {
+  final PropertyController _propertyController = PropertyController();
+  List<Property> _properties = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTenants();
+  }
+
+  Future<void> _loadTenants() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception('No user logged in');
+      }
+
+      _properties = await _propertyController.getProperties(currentUser.uid);
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Error al cargar las propiedades: ${e.toString()}';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo blanco
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            'Propiedades',
-            style: TextStyle(color: Colors.black),
-          ),
+        title: const Text(
+          'Propeiedades',
+          style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined,
+              color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -34,6 +64,10 @@ class PropertiesManagementPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
+            const SizedBox(height: 20),
+            // Barra de búsqueda (igual que en la implementación anterior)
+            // ...
+
             // Barra de búsqueda
             Container(
               decoration: BoxDecoration(
@@ -53,7 +87,9 @@ class PropertiesManagementPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // Fila de filtro y botón de configuración
+            // Fila de filtro y botón de configuración (igual que en la implementación anterior)
+            // ...
+// Fila de filtro y botón de configuración
             Row(
               children: [
                 const Text(
@@ -88,39 +124,55 @@ class PropertiesManagementPage extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-            // Lista de propiedades
-            Expanded(
-              child: ListView.builder(
-                itemCount: properties.length,
-                itemBuilder: (context, index) {
-                  final property = properties[index];
-                  return SectionCard(
-                    icon: Icons.home_outlined,
-                    title: property['title'] ??
-                        'Sin nombre', // Nombre de la propiedad
-                    description: property['description'] ??
-                        'Sin descripción', // Descripción de la propiedad
-                    backgroundColor: Colors.blue.shade100, // Color azul claro
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditPropertyPage(
-                            entityId: property['id'] ??
-                                '0', // Asegurarse de que no sea nulo
-                            entityData: property,
+            if (_isLoading)
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+            else if (_properties.isEmpty)
+              const Expanded(
+                child: Center(
+                  child: Text(
+                    'No hay porpiedades registradas',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _properties.length,
+                  itemBuilder: (context, index) {
+                    final property = _properties[index];
+                    return SectionCard(
+                      icon: Icons.person_outline,
+                      title: property.address,
+                      description:
+                          'Registrada el ${property.createdAt?.toString() ?? 'N/A'}',
+                      backgroundColor: Colors.green.shade100,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditPropertyPage(
+                              entityId: property.id,
+                              entityData: property.toFirestore(),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
 
-            // Botón "Nueva Propiedad"
+            const SizedBox(height: 20),
+
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -132,22 +184,24 @@ class PropertiesManagementPage extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
-                padding: EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 15),
               ),
-              child: Center(
+              child: const Center(
                 child: Text(
                   'Nueva Propiedad',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
+  // El método _buildFilterModal se mantiene igual que en la implementación anterior
   Widget _buildFilterModal(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20),
@@ -177,15 +231,15 @@ class PropertiesManagementPage extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Tipo de Propiedad',
+                  'Propiedad',
                   style: TextStyle(fontSize: 16),
                 ),
               ),
               Expanded(
                 child: DropdownButton<String>(
                   isExpanded: true,
-                  value: 'Casa',
-                  items: <String>['Casa', 'Apartamento', 'Oficina']
+                  value: 'ID',
+                  items: <String>['ID', 'Dirección', 'Fecha Creación']
                       .map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -257,11 +311,11 @@ class SectionCard extends StatelessWidget {
         leading: CircleAvatar(
           radius: 24,
           backgroundColor: backgroundColor,
-          child: Icon(icon, color: Colors.blue.shade400, size: 24),
+          child: Icon(icon, color: Colors.green.shade400, size: 24),
         ),
         title: Text(
           title,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         subtitle: Text(description),
         onTap: onTap,

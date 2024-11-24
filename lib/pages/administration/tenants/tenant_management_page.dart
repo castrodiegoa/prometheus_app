@@ -1,36 +1,60 @@
 import 'package:flutter/material.dart';
-import 'package:prometheus_app/pages/administration/tenants/new_tenant_page.dart'; // Importar NewTenantPage
-import 'package:prometheus_app/pages/administration/tenants/edit_tenant_page.dart'; // Importar EditTenantPage
+import 'package:prometheus_app/controllers/tenant_controller.dart';
+import 'package:prometheus_app/models/tenant_model.dart';
+import 'package:prometheus_app/pages/administration/tenants/new_tenant_page.dart';
+import 'package:prometheus_app/pages/administration/tenants/edit_tenant_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class TenantsManagementPage extends StatelessWidget {
-  final List<Map<String, String>> tenants = [
-    {
-      'name': 'Inquilino José Guillén',
-      'description': 'Contrato desde 10/01/2023'
-    },
-    {
-      'name': 'Inquilino María Ramírez',
-      'description': 'Contrato desde 12/01/2023'
-    },
-  ];
+class TenantsManagementPage extends StatefulWidget {
+  @override
+  _TenantsManagementPageState createState() => _TenantsManagementPageState();
+}
 
-  TenantsManagementPage();
+class _TenantsManagementPageState extends State<TenantsManagementPage> {
+  final TenantController _tenantController = TenantController();
+  List<Tenant> _tenants = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTenants();
+  }
+
+  Future<void> _loadTenants() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception('No user logged in');
+      }
+
+      _tenants = await _tenantController.getTenants(currentUser.uid);
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Error al cargar los inquilinos: ${e.toString()}';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo blanco
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            'Inquilinos',
-            style: TextStyle(color: Colors.black),
-          ),
+        title: const Text(
+          'Inquilinos',
+          style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined,
+              color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -40,6 +64,10 @@ class TenantsManagementPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
+            const SizedBox(height: 20),
+            // Barra de búsqueda (igual que en la implementación anterior)
+            // ...
+
             // Barra de búsqueda
             Container(
               decoration: BoxDecoration(
@@ -59,7 +87,9 @@ class TenantsManagementPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // Fila de filtro y botón de configuración
+            // Fila de filtro y botón de configuración (igual que en la implementación anterior)
+            // ...
+// Fila de filtro y botón de configuración
             Row(
               children: [
                 const Text(
@@ -94,38 +124,55 @@ class TenantsManagementPage extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-            // Lista de inquilinos
-            Expanded(
-              child: ListView.builder(
-                itemCount: tenants.length,
-                itemBuilder: (context, index) {
-                  final tenant = tenants[index];
-                  return SectionCard(
-                    icon: Icons.person_outline,
-                    title:
-                        tenant['name'] ?? 'Sin nombre', // Nombre del inquilino
-                    description: tenant['description'] ?? 'Sin descripción',
-                    backgroundColor: Colors.green.shade100, // Color verde claro
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditTenantPage(
-                            entityId: tenant['name'] ??
-                                '0', // Asegurarse de que no sea nulo
-                            entityData: tenant,
+            if (_isLoading)
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+            else if (_tenants.isEmpty)
+              const Expanded(
+                child: Center(
+                  child: Text(
+                    'No hay inquilinos registrados',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _tenants.length,
+                  itemBuilder: (context, index) {
+                    final tenant = _tenants[index];
+                    return SectionCard(
+                      icon: Icons.person_outline,
+                      title: '${tenant.firstName} ${tenant.lastName}',
+                      description:
+                          'Contrato desde ${tenant.createdAt?.toString() ?? 'N/A'}',
+                      backgroundColor: Colors.green.shade100,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditTenantPage(
+                              entityId: tenant.id,
+                              entityData: tenant.toFirestore(),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
 
-            // Botón "Nuevo Inquilino"
+            const SizedBox(height: 20),
+
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -137,22 +184,24 @@ class TenantsManagementPage extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
-                padding: EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 15),
               ),
-              child: Center(
+              child: const Center(
                 child: Text(
                   'Nuevo Inquilino',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
+  // El método _buildFilterModal se mantiene igual que en la implementación anterior
   Widget _buildFilterModal(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20),
@@ -265,7 +314,7 @@ class SectionCard extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         subtitle: Text(description),
         onTap: onTap,

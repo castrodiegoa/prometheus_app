@@ -146,27 +146,19 @@ class HomePageContent extends StatelessWidget {
         color: Colors.green.shade100,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: const Column(
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.insert_chart_outlined_rounded, size: 40),
               SizedBox(width: AppConstants.smallSpacing),
               Expanded(
                 child: Text(
-                  'Registros recientes: José Guillén ha eliminado un registro de propiedades con id 090417 el 10/05/2024.',
+                  'App para arrendadores informales que simplifica la gestión de propiedades, inquilinos y pagos',
                   style: TextStyle(fontSize: 16),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: () {},
-            child: const Text(
-              'Ver todos los registros',
-              style: TextStyle(color: Colors.orange),
-            ),
           ),
         ],
       ),
