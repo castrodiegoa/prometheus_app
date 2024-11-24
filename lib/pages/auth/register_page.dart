@@ -4,7 +4,14 @@ import '../../controllers/auth_controller.dart';
 import '../../widgets/custom_input_field.dart';
 import '../../widgets/custom_button.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
+  RegisterPage({super.key});
+
+  @override
+  _RegisterPageState createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   final AuthController _authController = Get.put(AuthController());
   final TextEditingController _documentNumberController =
       TextEditingController();
@@ -16,7 +23,8 @@ class RegisterPage extends StatelessWidget {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  RegisterPage({super.key});
+  bool _obscurePassword = true; // Estado inicial: contraseña oculta
+  bool _obscureConfirmPassword = true; // Estado inicial: confirmación oculta
 
   @override
   Widget build(BuildContext context) {
@@ -89,14 +97,18 @@ class RegisterPage extends StatelessWidget {
                   hintText: 'Contraseña',
                   controller: _passwordController,
                   icon: Icons.lock,
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   suffixIcon: IconButton(
-                    icon: const Icon(
-                      Icons.visibility_outlined,
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
                       color: Colors.grey,
                     ),
                     onPressed: () {
-                      // Acción para mostrar/ocultar contraseña
+                      setState(() {
+                        _obscurePassword = !_obscurePassword; // Alternar estado
+                      });
                     },
                   ),
                 ),
@@ -106,14 +118,19 @@ class RegisterPage extends StatelessWidget {
                   hintText: 'Confirmar contraseña',
                   controller: _confirmPasswordController,
                   icon: Icons.lock_outline,
-                  obscureText: true,
+                  obscureText: _obscureConfirmPassword,
                   suffixIcon: IconButton(
-                    icon: const Icon(
-                      Icons.visibility_outlined,
+                    icon: Icon(
+                      _obscureConfirmPassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
                       color: Colors.grey,
                     ),
                     onPressed: () {
-                      // Acción para mostrar/ocultar contraseña
+                      setState(() {
+                        _obscureConfirmPassword =
+                            !_obscureConfirmPassword; // Alternar estado
+                      });
                     },
                   ),
                 ),

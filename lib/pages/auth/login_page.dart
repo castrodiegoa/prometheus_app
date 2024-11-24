@@ -4,12 +4,19 @@ import '../../controllers/auth_controller.dart';
 import '../../widgets/custom_input_field.dart';
 import '../../widgets/custom_button.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  LoginPage({super.key});
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final AuthController _authController = Get.find<AuthController>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  LoginPage({super.key});
+  bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +46,18 @@ class LoginPage extends StatelessWidget {
                 hintText: 'Contraseña',
                 controller: _passwordController,
                 icon: Icons.lock_outline,
-                obscureText: true,
+                obscureText: _obscureText,
                 suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.visibility_outlined,
+                  icon: Icon(
+                    _obscureText
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     color: Colors.grey,
                   ),
                   onPressed: () {
-                    // Acción para mostrar/ocultar contraseña
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
                   },
                 ),
               ),

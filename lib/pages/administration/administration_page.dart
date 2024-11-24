@@ -47,28 +47,7 @@ class _BuscarPageState extends State<BuscarPage> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
-
-            // Fila de filtro y botón de configuración
-            Row(
-              children: [
-                const Text('Filtrar', style: TextStyle(fontSize: 16.0)),
-                const Spacer(),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.orange,
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.tune, color: Colors.white),
-                    onPressed: () {
-                      // Acción para el filtro
-                    },
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Lista de secciones
             Expanded(
@@ -133,14 +112,6 @@ class _BuscarPageState extends State<BuscarPage> {
                         ),
                       );
                     },
-                  ),
-                  SectionCard(
-                    icon: Icons.attach_money,
-                    title: 'Registros de auditoría',
-                    logs: 80,
-                    updateTime: 'Hace 02h',
-                    backgroundColor: Colors.orange,
-                    onTap: () {},
                   ),
                 ],
               ),
