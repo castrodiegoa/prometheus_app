@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:file_picker/file_picker.dart';
-import 'dart:io';
 import 'package:prometheus_app/controllers/rent_controller.dart';
 
 class NewRentPage extends StatelessWidget {
-  final RentController controller = Get.put(RentController());
+  //final RentController controller = Get.put(RentController());
   final _formKey = GlobalKey<FormState>();
 
   NewRentPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final RentController controller = Get.find();
+
+    // Reset form state when the page is created
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.resetFormState();
+      controller.loadInitialData();
+    });
+
     return Scaffold(
       appBar: _buildAppBar(),
-      body: _buildBody(),
+      body: _buildBody(controller),
     );
   }
 
@@ -30,7 +36,7 @@ class NewRentPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(RentController controller) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -39,11 +45,15 @@ class NewRentPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDateSection(),
-              _buildFinancialSection(),
-              _buildSelectionSection(),
-              _buildFileSection(),
-              _buildSubmitButton(),
+              _buildDateSection(controller),
+              _buildFinancialSection(controller),
+              Obx(() {
+                if (controller.isLoading.value) {
+                  return CircularProgressIndicator();
+                }
+                return _buildSelectionSection(controller);
+              }),
+              _buildSubmitButton(controller),
             ],
           ),
         ),
@@ -51,13 +61,13 @@ class NewRentPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDateSection() {
+  Widget _buildDateSection(RentController controller) {
     return Column(
       children: [
         Obx(() => _buildDateField(
               label: 'Fecha de inicio',
               value: controller.startDate.value,
-              onSelect: _selectStartDate,
+              onSelect: () => _selectStartDate(controller),
               validator: (value) {
                 if (value == null) return 'La fecha de inicio es requerida';
                 return null;
@@ -67,8 +77,9 @@ class NewRentPage extends StatelessWidget {
         Obx(() => _buildDateField(
               label: 'Fecha fin',
               value: controller.endDate.value,
-              onSelect:
-                  controller.startDate.value != null ? _selectEndDate : null,
+              onSelect: controller.startDate.value != null
+                  ? () => _selectEndDate(controller)
+                  : null,
               validator: (value) {
                 if (value == null) return 'La fecha fin es requerida';
                 if (controller.startDate.value != null &&
@@ -82,7 +93,7 @@ class NewRentPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFinancialSection() {
+  Widget _buildFinancialSection(RentController controller) {
     return Column(
       children: [
         _buildTextField(
@@ -119,7 +130,7 @@ class NewRentPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSelectionSection() {
+  Widget _buildSelectionSection(RentController controller) {
     return Column(
       children: [
         Obx(() => _buildDropdownField(
@@ -299,25 +310,7 @@ class NewRentPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFileSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Contrato', style: TextStyle(fontSize: 16)),
-          SizedBox(height: 8),
-          Obx(
-            () => controller.agreementFile.value != null
-                ? _buildSelectedFile()
-                : _buildFileSelector(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSelectedFile() {
+  Widget _buildSelectedFile(RentController controller) {
     return Row(
       children: [
         Expanded(
@@ -334,36 +327,34 @@ class NewRentPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFileSelector() {
-    return ElevatedButton(
-      onPressed: _selectFile,
-      child: Text('Seleccionar archivo'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.grey[200],
-        foregroundColor: Colors.black,
-      ),
-    );
-  }
-
-  Widget _buildSubmitButton() {
+  Widget _buildSubmitButton(RentController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
-      child: ElevatedButton(
-        onPressed: _submitForm,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.orange,
-          minimumSize: Size(double.infinity, 50),
-          padding: EdgeInsets.symmetric(vertical: 15),
-        ),
-        child: Text(
-          'Crear Alquiler',
-          style: TextStyle(fontSize: 16, color: Colors.white),
-        ),
-      ),
+      child: Obx(() {
+        final isLoading = controller.isLoading.value;
+        return ElevatedButton(
+          onPressed: isLoading
+              ? null
+              : () => _submitForm(controller), // Usar una función lambda
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange,
+            minimumSize: const Size(double.infinity, 50),
+            padding: const EdgeInsets.symmetric(vertical: 15),
+          ),
+          child: isLoading
+              ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+              : const Text(
+                  'Crear Alquiler',
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+        );
+      }),
     );
   }
 
-  Future<void> _selectStartDate() async {
+  Future<void> _selectStartDate(RentController controller) async {
     final DateTime? picked = await showDatePicker(
       context: Get.context!,
       initialDate: DateTime.now(),
@@ -375,7 +366,7 @@ class NewRentPage extends StatelessWidget {
     }
   }
 
-  Future<void> _selectEndDate() async {
+  Future<void> _selectEndDate(RentController controller) async {
     if (controller.startDate.value == null) return;
 
     final DateTime? picked = await showDatePicker(
@@ -397,35 +388,38 @@ class NewRentPage extends StatelessWidget {
     }
   }
 
-  Future<void> _selectFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'],
-    );
-
-    if (result != null) {
-      controller.setAgreementFile(File(result.files.single.path!));
-    }
-  }
-
-  void _submitForm() {
+  void _submitForm(RentController controller) async {
     if (_formKey.currentState!.validate()) {
-      if (controller.agreementFile.value == null) {
+      // if (controller.agreementFile.value == null) {
+      //   Get.snackbar(
+      //     'Error',
+      //     'Debe seleccionar un archivo de contrato',
+      //     backgroundColor: Colors.red,
+      //     colorText: Colors.white,
+      //   );
+      //   return;
+      // }
+
+      try {
+        controller.isLoading.value = true;
+        await controller.createRent();
+        Get.back(); // Redirige a la página anterior
+        Get.snackbar(
+          'Éxito',
+          'Alquiler creado con éxito',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } catch (e) {
         Get.snackbar(
           'Error',
-          'Debe seleccionar un archivo de contrato',
+          'Ocurrió un problema al crear el alquiler',
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
-        return;
+      } finally {
+        controller.isLoading.value = false;
       }
-      controller.createRent();
-      Get.snackbar(
-        'OK',
-        'Creado con éxito',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
     }
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:prometheus_app/pages/administration/properties/propeties_management_page.dart';
+import 'package:prometheus_app/pages/administration/properties/properties_management_page.dart';
 import 'package:prometheus_app/pages/administration/rents/rents_management_page.dart';
 import 'package:prometheus_app/pages/administration/tenants/tenant_management_page.dart';
 import 'package:prometheus_app/pages/profile/profile_page.dart';
@@ -132,8 +132,8 @@ class HomePageContent extends StatelessWidget {
           _buildRecentActivityBanner(),
           const SizedBox(height: AppConstants.defaultSpacing),
           _buildQuickAccessSection(context),
-          const SizedBox(height: AppConstants.defaultSpacing),
-          _buildRelevantSection(),
+          // const SizedBox(height: AppConstants.defaultSpacing),
+          // _buildRelevantSection(),
         ],
       ),
     );

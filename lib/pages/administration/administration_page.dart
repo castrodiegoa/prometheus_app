@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../administration/tenants/tenant_management_page.dart';
 import 'payments/payments_management_page.dart';
-import '../administration/properties/propeties_management_page.dart';
+import 'properties/properties_management_page.dart';
 import '../administration/rents/rents_management_page.dart';
 
 class BuscarPage extends StatefulWidget {

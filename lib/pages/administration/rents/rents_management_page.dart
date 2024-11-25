@@ -1,61 +1,91 @@
 import 'package:flutter/material.dart';
-import 'package:prometheus_app/pages/administration/rents/new_rent_page.dart'; // Importar NewRentPage
-import 'package:prometheus_app/pages/administration/rents/edit_rent_page.dart'; // Importar EditRentPage
+import 'package:prometheus_app/controllers/rent_controller.dart';
+import 'package:prometheus_app/models/rent_model.dart';
+import 'package:prometheus_app/pages/administration/rents/new_rent_page.dart';
+import 'package:prometheus_app/pages/administration/rents/edit_rent_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class RentsManagementPage extends StatelessWidget {
-  // Lista de alquileres estáticos simulados
-  final List<Map<String, String>> rents = [
-    {
-      'id': '1',
-      'tenant': 'Juan Pérez',
-      'amount': '\$800,000',
-      'status': 'Pagado',
-      'dueDate': '2024-11-01',
-      'property': 'Apartamento 101'
-    },
-    {
-      'id': '2',
-      'tenant': 'Ana García',
-      'amount': '\$1,200,000',
-      'status': 'Pendiente',
-      'dueDate': '2024-11-05',
-      'property': 'Casa 202'
-    },
-    {
-      'id': '3',
-      'tenant': 'Carlos López',
-      'amount': '\$900,000',
-      'status': 'Retrasado',
-      'dueDate': '2024-10-15',
-      'property': 'Apartamento 301'
-    },
-    {
-      'id': '4',
-      'tenant': 'Lucía Martínez',
-      'amount': '\$950,000',
-      'status': 'Pagado',
-      'dueDate': '2024-11-10',
-      'property': 'Casa 405'
-    },
-  ];
+class RentsManagementPage extends StatefulWidget {
+  @override
+  _RentsManagementPageState createState() => _RentsManagementPageState();
+}
 
-  RentsManagementPage();
+class _RentsManagementPageState extends State<RentsManagementPage> {
+  final RentController _rentController = RentController();
+  List<Rent> _rents = [];
+  List<Rent> _filteredRents = [];
+  final TextEditingController _searchController = TextEditingController();
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_filterProperties);
+    _loadRents();
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_filterProperties);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadRents() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception('No user logged in');
+      }
+
+      _rents = await _rentController.getRents(currentUser.uid);
+      setState(() {
+        _filteredRents = _rents;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Error al cargar las rentas: ${e.toString()}';
+      });
+    }
+  }
+
+  void _filterProperties() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredRents = _rents
+          .where((property) =>
+              property.id.toLowerCase().contains(query) ||
+              (property.createdAt?.toString() ?? '')
+                  .toLowerCase()
+                  .contains(query))
+          .toList();
+    });
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {
+      _filteredRents = _rents;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo blanco
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            'Alquileres',
-            style: TextStyle(color: Colors.black),
-          ),
+        title: const Text(
+          'Alquileres',
+          style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined,
+              color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -65,188 +95,103 @@ class RentsManagementPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
-            // Barra de búsqueda
+            const SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
+                controller: _searchController,
                 decoration: InputDecoration(
                   hintText: 'Buscar alquiler',
                   border: InputBorder.none,
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
-                  suffixIcon: Icon(Icons.close, color: Colors.grey),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.grey),
+                    onPressed: _clearSearch,
+                  ),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 ),
               ),
             ),
-            SizedBox(height: 20),
-
-            // Fila de filtro y botón de configuración
-            Row(
-              children: [
-                const Text(
-                  'Filtrar',
-                  style: TextStyle(fontSize: 16.0),
-                ),
-                const Spacer(),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.orange, // Fondo naranja
-                    borderRadius:
-                        BorderRadius.circular(12.0), // Bordes redondeados
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.tune,
-                        color: Colors.white), // Ícono blanco de filtro
-                    onPressed: () {
-                      // Mostrar el modal de filtros
-                      showModalBottomSheet(
-                        context: context,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(25.0),
-                          ),
-                        ),
-                        builder: (BuildContext context) {
-                          return _buildFilterModal(context);
-                        },
-                      );
-                    },
+            const SizedBox(height: 20),
+            if (_isLoading)
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+            else if (_filteredRents.isEmpty)
+              const Expanded(
+                child: Center(
+                  child: Text(
+                    'No hay alquileres que coincidan',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: 20),
-
-            // Lista de alquileres
-            Expanded(
-              child: ListView.builder(
-                itemCount: rents.length,
-                itemBuilder: (context, index) {
-                  final rent = rents[index];
-                  return SectionCard(
-                    icon: Icons.receipt_long_outlined,
-                    title:
-                        rent['tenant'] ?? 'Sin nombre', // Nombre del inquilino
-                    description:
-                        'Monto: ${rent['amount'] ?? 'Sin monto'} - Estado: ${rent['status'] ?? 'Desconocido'}', // Monto y estado
-                    backgroundColor: Colors.green.shade100, // Color verde claro
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditRentPage(
-                            entityId: rent['id'] ??
-                                '0', // Asegurarse de que no sea nulo
-                            entityData: rent,
+              )
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _filteredRents.length,
+                  itemBuilder: (context, index) {
+                    final property = _filteredRents[index];
+                    return SectionCard(
+                      icon: Icons.person_outline,
+                      title: property.id,
+                      description:
+                          'Registrada el ${property.createdAt?.toString() ?? 'N/A'}',
+                      backgroundColor: Colors.green.shade100,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditRentPage(
+                              entityId: property.id.toString(),
+                              entityData: property.toFirestore(),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
+                        ).then((value) {
+                          // Recargar los datos si se editó la propiedad
+                          _loadRents();
+                        });
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-
-            // Botón "Nuevo Alquiler"
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                // Navegar a NewRentPage
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => NewRentPage(),
                   ),
-                );
+                ).then((value) {
+                  // Este código se ejecutará cuando regrese a esta página desde NewRentPage.
+                  _loadRents(); // Recargar los datos cuando regreses a la página anterior
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
-                padding: EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 15),
               ),
-              child: Center(
+              child: const Center(
                 child: Text(
-                  'Nuevo Alquiler',
+                  'Nuevo alquiler',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildFilterModal(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Título centrado
-          Text(
-            'Aplicar Filtros',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center, // Centramos el texto
-          ),
-          SizedBox(height: 20),
-
-          // Dropdown de filtro
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Estado del Alquiler',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-              Expanded(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: 'Pagado',
-                  items: <String>['Pagado', 'Pendiente', 'Retrasado']
-                      .map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    // Acción al cambiar el filtro
-                  },
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-
-          // Botón de aplicar filtros
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Cerrar el modal
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-            ),
-            child: Text(
-              'Aplicar Filtros',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -292,7 +237,7 @@ class SectionCard extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         subtitle: Text(description),
         onTap: onTap,

@@ -7,7 +7,7 @@ class Rent {
   String? totalPersons;
   double amount;
   String? agreementUrl;
-  bool isActive;
+  bool? isActive;
   DateTime? createdAt;
   DateTime? updatedAt;
   String tenantId;
@@ -22,7 +22,7 @@ class Rent {
     this.totalPersons,
     required this.amount,
     this.agreementUrl,
-    required this.isActive,
+    this.isActive,
     this.createdAt,
     this.updatedAt,
     required this.tenantId,
@@ -55,18 +55,18 @@ class Rent {
   // Método para convertir la instancia a un mapa compatible con Firestore (serialización)
   Map<String, dynamic> toFirestore() {
     return {
-      'id': id,
+      'id': id.toString(),
       'startDate': Timestamp.fromDate(startDate),
       'endDate': Timestamp.fromDate(endDate),
       'totalPersons': totalPersons,
-      'amount': amount,
-      'agreementUrl': agreementUrl,
+      'amount': amount.toString(),
+      'agreementUrl': agreementUrl.toString(),
       'isActive': isActive,
       'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
       'updatedAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
-      'tenantId': tenantId, // Se incluye el id del inquilino
-      'propertyId': propertyId, // Se incluye el id de la propiedad
-      'userId': userId,
+      'tenantId': tenantId.toString(), // Se incluye el id del inquilino
+      'propertyId': propertyId.toString(), // Se incluye el id de la propiedad
+      'userId': userId.toString(),
     };
   }
 

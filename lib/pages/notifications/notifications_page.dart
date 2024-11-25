@@ -20,12 +20,19 @@ class NotificacionesPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             NotificationCard(
               title: 'Aviso de pago atrasado',
               description:
                   'Se le informa que el inquilino José Guillén tiene el pago de algunos servicios atrasados este mes. Número de arriendo: 090410.',
-              date: '15/08/2023',
+              date: '15/08/2024',
+            ),
+            const SizedBox(height: 10),
+            NotificationCard(
+              title: 'Aviso de pago atrasado',
+              description:
+                  'Se le informa que el inquilino Jairo Martínez tiene el pago de algunos servicios atrasados este mes. Número de arriendo: 090410.',
+              date: '25/08/2024',
             ),
           ],
         ),

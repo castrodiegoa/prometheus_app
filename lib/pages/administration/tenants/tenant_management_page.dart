@@ -13,8 +13,10 @@ class TenantsManagementPage extends StatefulWidget {
 class _TenantsManagementPageState extends State<TenantsManagementPage> {
   final TenantController _tenantController = TenantController();
   List<Tenant> _tenants = [];
+  List<Tenant> _filteredTenants = []; // Lista filtrada para la búsqueda
   bool _isLoading = true;
   String? _errorMessage;
+  String _searchQuery = ''; // Consulta de búsqueda
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class _TenantsManagementPageState extends State<TenantsManagementPage> {
       }
 
       _tenants = await _tenantController.getTenants(currentUser.uid);
+      _filteredTenants = _tenants; // Inicialmente muestra todos los inquilinos
       setState(() {
         _isLoading = false;
       });
@@ -39,6 +42,17 @@ class _TenantsManagementPageState extends State<TenantsManagementPage> {
         _errorMessage = 'Error al cargar los inquilinos: ${e.toString()}';
       });
     }
+  }
+
+  void _filterTenants(String query) {
+    setState(() {
+      _searchQuery = query;
+      _filteredTenants = _tenants
+          .where((tenant) => '${tenant.firstName} ${tenant.lastName}'
+              .toLowerCase()
+              .contains(query.toLowerCase()))
+          .toList();
+    });
   }
 
   @override
@@ -65,9 +79,6 @@ class _TenantsManagementPageState extends State<TenantsManagementPage> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            // Barra de búsqueda (igual que en la implementación anterior)
-            // ...
-
             // Barra de búsqueda
             Container(
               decoration: BoxDecoration(
@@ -75,66 +86,34 @@ class _TenantsManagementPageState extends State<TenantsManagementPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
+                onChanged: _filterTenants, // Actualiza la búsqueda
                 decoration: InputDecoration(
                   hintText: 'Buscar inquilino',
                   border: InputBorder.none,
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
-                  suffixIcon: Icon(Icons.close, color: Colors.grey),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.close, color: Colors.grey),
+                          onPressed: () {
+                            _filterTenants(''); // Limpia la búsqueda
+                          },
+                        )
+                      : null,
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 ),
               ),
             ),
-            SizedBox(height: 20),
-
-            // Fila de filtro y botón de configuración (igual que en la implementación anterior)
-            // ...
-// Fila de filtro y botón de configuración
-            Row(
-              children: [
-                const Text(
-                  'Filtrar',
-                  style: TextStyle(fontSize: 16.0),
-                ),
-                const Spacer(),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.orange, // Fondo naranja
-                    borderRadius:
-                        BorderRadius.circular(12.0), // Bordes redondeados
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.tune,
-                        color: Colors.white), // Ícono blanco de filtro
-                    onPressed: () {
-                      // Mostrar el modal de filtros
-                      showModalBottomSheet(
-                        context: context,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(25.0),
-                          ),
-                        ),
-                        builder: (BuildContext context) {
-                          return _buildFilterModal(context);
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
             const SizedBox(height: 20),
-
             if (_isLoading)
               const Center(
                 child: CircularProgressIndicator(),
               )
-            else if (_tenants.isEmpty)
+            else if (_filteredTenants.isEmpty)
               const Expanded(
                 child: Center(
                   child: Text(
-                    'No hay inquilinos registrados',
+                    'No hay inquilinos que coincidan con la búsqueda',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -146,14 +125,14 @@ class _TenantsManagementPageState extends State<TenantsManagementPage> {
             else
               Expanded(
                 child: ListView.builder(
-                  itemCount: _tenants.length,
+                  itemCount: _filteredTenants.length,
                   itemBuilder: (context, index) {
-                    final tenant = _tenants[index];
+                    final tenant = _filteredTenants[index];
                     return SectionCard(
                       icon: Icons.person_outline,
                       title: '${tenant.firstName} ${tenant.lastName}',
                       description:
-                          'Contrato desde ${tenant.createdAt?.toString() ?? 'N/A'}',
+                          'Registrado el ${tenant.createdAt?.toString() ?? 'N/A'}',
                       backgroundColor: Colors.green.shade100,
                       onTap: () {
                         Navigator.push(
@@ -164,15 +143,16 @@ class _TenantsManagementPageState extends State<TenantsManagementPage> {
                               entityData: tenant.toFirestore(),
                             ),
                           ),
-                        );
+                        ).then((value) {
+                          // Recargar los datos si se editó un inquilino
+                          _loadTenants();
+                        });
                       },
                     );
                   },
                 ),
               ),
-
             const SizedBox(height: 20),
-
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -180,7 +160,10 @@ class _TenantsManagementPageState extends State<TenantsManagementPage> {
                   MaterialPageRoute(
                     builder: (context) => NewTenantPage(),
                   ),
-                );
+                ).then((value) {
+                  // Recargar los datos si se agregó un nuevo inquilino
+                  _loadTenants();
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
@@ -193,85 +176,84 @@ class _TenantsManagementPageState extends State<TenantsManagementPage> {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
+}
 
-  // El método _buildFilterModal se mantiene igual que en la implementación anterior
-  Widget _buildFilterModal(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
+// El método _buildFilterModal se mantiene igual que en la implementación anterior
+Widget _buildFilterModal(BuildContext context) {
+  return Container(
+    padding: EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(25),
+        topRight: Radius.circular(25),
+      ),
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Título centrado
+        Text(
+          'Aplicar Filtros',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center, // Centramos el texto
         ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Título centrado
-          Text(
+        SizedBox(height: 20),
+
+        // Dropdown de filtro
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Propiedad',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            Expanded(
+              child: DropdownButton<String>(
+                isExpanded: true,
+                value: 'ID',
+                items: <String>['ID', 'Nombre', 'Fecha'].map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  // Acción al cambiar el filtro
+                },
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+
+        // Botón de aplicar filtros
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context); // Cerrar el modal
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange,
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          ),
+          child: Text(
             'Aplicar Filtros',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center, // Centramos el texto
+            style: TextStyle(fontSize: 16, color: Colors.white),
           ),
-          SizedBox(height: 20),
-
-          // Dropdown de filtro
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Propiedad',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-              Expanded(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: 'ID',
-                  items: <String>['ID', 'Nombre', 'Fecha'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    // Acción al cambiar el filtro
-                  },
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-
-          // Botón de aplicar filtros
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Cerrar el modal
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-            ),
-            child: Text(
-              'Aplicar Filtros',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }
 
 class SectionCard extends StatelessWidget {

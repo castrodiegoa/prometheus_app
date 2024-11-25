@@ -13,13 +13,23 @@ class PropertiesManagementPage extends StatefulWidget {
 class _TenantsManagementPageState extends State<PropertiesManagementPage> {
   final PropertyController _propertyController = PropertyController();
   List<Property> _properties = [];
+  List<Property> _filteredProperties = [];
+  final TextEditingController _searchController = TextEditingController();
   bool _isLoading = true;
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
+    _searchController.addListener(_filterProperties);
     _loadTenants();
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_filterProperties);
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadTenants() async {
@@ -31,6 +41,7 @@ class _TenantsManagementPageState extends State<PropertiesManagementPage> {
 
       _properties = await _propertyController.getProperties(currentUser.uid);
       setState(() {
+        _filteredProperties = _properties;
         _isLoading = false;
       });
     } catch (e) {
@@ -41,13 +52,33 @@ class _TenantsManagementPageState extends State<PropertiesManagementPage> {
     }
   }
 
+  void _filterProperties() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredProperties = _properties
+          .where((property) =>
+              property.address.toLowerCase().contains(query) ||
+              (property.createdAt?.toString() ?? '')
+                  .toLowerCase()
+                  .contains(query))
+          .toList();
+    });
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {
+      _filteredProperties = _properties;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'Propeiedades',
+          'Propiedades',
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
@@ -65,76 +96,36 @@ class _TenantsManagementPageState extends State<PropertiesManagementPage> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            // Barra de búsqueda (igual que en la implementación anterior)
-            // ...
-
-            // Barra de búsqueda
             Container(
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
+                controller: _searchController,
                 decoration: InputDecoration(
                   hintText: 'Buscar propiedad',
                   border: InputBorder.none,
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
-                  suffixIcon: Icon(Icons.close, color: Colors.grey),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.grey),
+                    onPressed: _clearSearch,
+                  ),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 ),
               ),
             ),
-            SizedBox(height: 20),
-
-            // Fila de filtro y botón de configuración (igual que en la implementación anterior)
-            // ...
-// Fila de filtro y botón de configuración
-            Row(
-              children: [
-                const Text(
-                  'Filtrar',
-                  style: TextStyle(fontSize: 16.0),
-                ),
-                const Spacer(),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.orange, // Fondo naranja
-                    borderRadius:
-                        BorderRadius.circular(12.0), // Bordes redondeados
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.tune,
-                        color: Colors.white), // Ícono blanco de filtro
-                    onPressed: () {
-                      // Mostrar el modal de filtros
-                      showModalBottomSheet(
-                        context: context,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(25.0),
-                          ),
-                        ),
-                        builder: (BuildContext context) {
-                          return _buildFilterModal(context);
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
             const SizedBox(height: 20),
-
             if (_isLoading)
               const Center(
                 child: CircularProgressIndicator(),
               )
-            else if (_properties.isEmpty)
+            else if (_filteredProperties.isEmpty)
               const Expanded(
                 child: Center(
                   child: Text(
-                    'No hay porpiedades registradas',
+                    'No hay propiedades que coincidan',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -146,9 +137,9 @@ class _TenantsManagementPageState extends State<PropertiesManagementPage> {
             else
               Expanded(
                 child: ListView.builder(
-                  itemCount: _properties.length,
+                  itemCount: _filteredProperties.length,
                   itemBuilder: (context, index) {
-                    final property = _properties[index];
+                    final property = _filteredProperties[index];
                     return SectionCard(
                       icon: Icons.person_outline,
                       title: property.address,
@@ -164,15 +155,16 @@ class _TenantsManagementPageState extends State<PropertiesManagementPage> {
                               entityData: property.toFirestore(),
                             ),
                           ),
-                        );
+                        ).then((value) {
+                          // Recargar los datos si se editó la propiedad
+                          _loadTenants();
+                        });
                       },
                     );
                   },
                 ),
               ),
-
             const SizedBox(height: 20),
-
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -180,7 +172,10 @@ class _TenantsManagementPageState extends State<PropertiesManagementPage> {
                   MaterialPageRoute(
                     builder: (context) => NewPropertyPage(),
                   ),
-                );
+                ).then((value) {
+                  // Recargar los datos si se creó una nueva propiedad
+                  _loadTenants();
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
@@ -193,83 +188,9 @@ class _TenantsManagementPageState extends State<PropertiesManagementPage> {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
           ],
         ),
-      ),
-    );
-  }
-
-  // El método _buildFilterModal se mantiene igual que en la implementación anterior
-  Widget _buildFilterModal(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Título centrado
-          Text(
-            'Aplicar Filtros',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center, // Centramos el texto
-          ),
-          SizedBox(height: 20),
-
-          // Dropdown de filtro
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Propiedad',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-              Expanded(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: 'ID',
-                  items: <String>['ID', 'Dirección', 'Fecha Creación']
-                      .map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    // Acción al cambiar el filtro
-                  },
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-
-          // Botón de aplicar filtros
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Cerrar el modal
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-            ),
-            child: Text(
-              'Aplicar Filtros',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ),
-        ],
       ),
     );
   }
