@@ -182,7 +182,7 @@ class HomePageContent extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(AppConstants.defaultPadding),
             child: const Text(
-              'Configura alertas para vencimientos y nuevos alquileres desde el panel de administración.',
+              'Mantén actualizados los datos de tus alquileres, para una gestión más llevadera.',
               style: TextStyle(fontSize: 16),
             ),
           ),
@@ -271,5 +271,3 @@ class HomePageContent extends StatelessWidget {
     );
   }
 }
-
-
