@@ -3,10 +3,17 @@ import 'package:get/get.dart';
 import 'package:prometheus_app/widgets/custom_input_field.dart';
 import 'package:prometheus_app/widgets/custom_button.dart';
 
-class NewPasswordScreen extends StatelessWidget {
+class NewPasswordScreen extends StatefulWidget {
+  NewPasswordScreen({super.key});
+
+  @override
+  _NewPasswordScreenState createState() => _NewPasswordScreenState();
+}
+
+class _NewPasswordScreenState extends State<NewPasswordScreen> {
   final TextEditingController passwordController = TextEditingController();
 
-  NewPasswordScreen({super.key}); // Controlador para la nueva contraseña
+  bool _obscurePassword = true; // Estado inicial: contraseña oculta
 
   @override
   Widget build(BuildContext context) {
@@ -41,21 +48,29 @@ class NewPasswordScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 20),
-            // Reemplazar TextField por CustomInputField
+            // Campo para nueva contraseña con visibilidad dinámica
             CustomInputField(
               hintText: 'Nueva contraseña',
               controller: passwordController,
               icon: Icons.lock_outlined,
-              obscureText: true,
+              obscureText: _obscurePassword,
               suffixIcon: IconButton(
-                icon: const Icon(Icons.visibility_outlined),
+                icon: Icon(
+                  _obscurePassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  color: Colors.grey,
+                ),
                 onPressed: () {
-                  // Acción para mostrar/ocultar contraseña
+                  setState(() {
+                    _obscurePassword =
+                        !_obscurePassword; // Alternar visibilidad
+                  });
                 },
               ),
             ),
             const SizedBox(height: 20),
-            // Reemplazar ElevatedButton por CustomButton
+            // Botón para continuar
             CustomButton(
               text: 'Continuar',
               onPressed: () {

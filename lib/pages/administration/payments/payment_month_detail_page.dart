@@ -106,17 +106,17 @@ class _PaymentMonthDetailState extends State<PaymentMonthDetail> {
                   },
                 ),
                 const SizedBox(height: 8.0),
-                // Rent receipt image picker
-                _buildImagePickerRow(
-                  rentReceiptImage,
-                  'Recibo alquiler',
-                  (File? image) {
-                    setState(() {
-                      rentReceiptImage = image;
-                    });
-                  },
-                ),
-                const SizedBox(height: 8.0),
+                // // Rent receipt image picker
+                // _buildImagePickerRow(
+                //   rentReceiptImage,
+                //   'Recibo alquiler',
+                //   (File? image) {
+                //     setState(() {
+                //       rentReceiptImage = image;
+                //     });
+                //   },
+                // ),
+                // const SizedBox(height: 8.0),
 
                 // Water service checkbox
                 _buildCheckboxRow(
@@ -129,17 +129,17 @@ class _PaymentMonthDetailState extends State<PaymentMonthDetail> {
                   },
                 ),
                 const SizedBox(height: 8.0),
-                // Water receipt image picker
-                _buildImagePickerRow(
-                  waterReceiptImage,
-                  'Recibo agua',
-                  (File? image) {
-                    setState(() {
-                      waterReceiptImage = image;
-                    });
-                  },
-                ),
-                const SizedBox(height: 8.0),
+                // // Water receipt image picker
+                // _buildImagePickerRow(
+                //   waterReceiptImage,
+                //   'Recibo agua',
+                //   (File? image) {
+                //     setState(() {
+                //       waterReceiptImage = image;
+                //     });
+                //   },
+                // ),
+                // const SizedBox(height: 8.0),
 
                 // Energy service checkbox
                 _buildCheckboxRow(
@@ -152,17 +152,17 @@ class _PaymentMonthDetailState extends State<PaymentMonthDetail> {
                   },
                 ),
                 const SizedBox(height: 8.0),
-                // Energy receipt image picker
-                _buildImagePickerRow(
-                  energyReceiptImage,
-                  'Recibo energía',
-                  (File? image) {
-                    setState(() {
-                      energyReceiptImage = image;
-                    });
-                  },
-                ),
-                const SizedBox(height: 8.0),
+                // // Energy receipt image picker
+                // _buildImagePickerRow(
+                //   energyReceiptImage,
+                //   'Recibo energía',
+                //   (File? image) {
+                //     setState(() {
+                //       energyReceiptImage = image;
+                //     });
+                //   },
+                // ),
+                // const SizedBox(height: 8.0),
 
                 // Gas service checkbox
                 _buildCheckboxRow(
@@ -175,17 +175,17 @@ class _PaymentMonthDetailState extends State<PaymentMonthDetail> {
                   },
                 ),
                 const SizedBox(height: 8.0),
-                // Gas receipt image picker
-                _buildImagePickerRow(
-                  gasReceiptImage,
-                  'Recibo gas',
-                  (File? image) {
-                    setState(() {
-                      gasReceiptImage = image;
-                    });
-                  },
-                ),
-                const SizedBox(height: 8.0),
+                // // Gas receipt image picker
+                // _buildImagePickerRow(
+                //   gasReceiptImage,
+                //   'Recibo gas',
+                //   (File? image) {
+                //     setState(() {
+                //       gasReceiptImage = image;
+                //     });
+                //   },
+                // ),
+                // const SizedBox(height: 8.0),
 
                 // Date details
                 _buildDetailRow('Fecha de pago',
@@ -232,18 +232,17 @@ class _PaymentMonthDetailState extends State<PaymentMonthDetail> {
       String label, bool value, Function(bool?) onChanged) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center, // Alineación vertical
       children: [
         Expanded(
-          child: Row(
-            children: [
-              Text(label,
-                  style: const TextStyle(fontSize: 16.0, color: Colors.grey)),
-              Checkbox(
-                value: value,
-                onChanged: onChanged,
-              ),
-            ],
+          child: Text(
+            label,
+            style: const TextStyle(fontSize: 16.0, color: Colors.grey),
           ),
+        ),
+        Checkbox(
+          value: value,
+          onChanged: onChanged,
         ),
       ],
     );
@@ -294,23 +293,6 @@ class _PaymentMonthDetailState extends State<PaymentMonthDetail> {
             ),
           ],
         ),
-
-        // Mostrar imagen o texto si se ha cargado un recibo
-        // receiptImage != null
-        //     ? Padding(
-        //         padding: const EdgeInsets.only(left: 16.0),
-        //         child: Image.file(
-        //           receiptImage,
-        //           height: 100.0,
-        //         ),
-        //       )
-        //     : const Padding(
-        //         padding: EdgeInsets.only(left: 16.0),
-        //         child: Text(
-        //           'No se ha cargado ningún recibo',
-        //           style: TextStyle(fontSize: 14.0, color: Colors.redAccent),
-        //         ),
-        //       ),
       ],
     );
   }

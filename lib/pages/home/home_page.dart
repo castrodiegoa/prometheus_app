@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:prometheus_app/pages/administration/properties/propeties_management_page.dart';
+import 'package:prometheus_app/pages/administration/properties/properties_management_page.dart';
 import 'package:prometheus_app/pages/administration/rents/rents_management_page.dart';
 import 'package:prometheus_app/pages/administration/tenants/tenant_management_page.dart';
 import 'package:prometheus_app/pages/profile/profile_page.dart';
@@ -129,47 +129,65 @@ class HomePageContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildRecentActivityBanner(),
+          _buildInformativeCards(),
           const SizedBox(height: AppConstants.defaultSpacing),
           _buildQuickAccessSection(context),
-          const SizedBox(height: AppConstants.defaultSpacing),
-          _buildRelevantSection(),
         ],
       ),
     );
   }
 
-  Widget _buildRecentActivityBanner() {
-    return Container(
-      padding: const EdgeInsets.all(AppConstants.defaultPadding),
-      decoration: BoxDecoration(
-        color: Colors.green.shade100,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.insert_chart_outlined_rounded, size: 40),
-              SizedBox(width: AppConstants.smallSpacing),
-              Expanded(
-                child: Text(
-                  'Registros recientes: José Guillén ha eliminado un registro de propiedades con id 090417 el 10/05/2024.',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ],
+  Widget _buildInformativeCards() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Información Importante',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        const SizedBox(height: AppConstants.smallSpacing),
+        Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: () {},
+          child: Padding(
+            padding: const EdgeInsets.all(AppConstants.defaultPadding),
             child: const Text(
-              'Ver todos los registros',
-              style: TextStyle(color: Colors.orange),
+              'Mantén actualizados los datos de tus propiedades para facilitar la gestión de inquilinos y pagos.',
+              style: TextStyle(fontSize: 16),
             ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: AppConstants.smallSpacing),
+        Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(AppConstants.defaultPadding),
+            child: const Text(
+              'Recuerda revisar las notificaciones regularmente para estar al tanto de pagos pendientes.',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppConstants.smallSpacing),
+        Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(AppConstants.defaultPadding),
+            child: const Text(
+              'Mantén actualizados los datos de tus alquileres, para una gestión más llevadera.',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -248,53 +266,6 @@ class HomePageContent extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRelevantSection() {
-    final List<RelevantItem> relevantItems = [
-      const RelevantItem(title: 'Alquileres activos', count: '5'),
-      const RelevantItem(title: 'Propiedades alquiladas', count: '5'),
-      const RelevantItem(title: 'Inquilinos activos', count: '5'),
-      const RelevantItem(title: 'Propiedades disponibles', count: '5'),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Relevantes',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        const SizedBox(height: AppConstants.smallSpacing),
-        ...relevantItems.map((item) => _buildRelevantItem(item)),
-      ],
-    );
-  }
-
-  Widget _buildRelevantItem(RelevantItem item) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(item.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(item.count),
-            ],
-          ),
-          TextButton(
-            onPressed: item.onTapMore ?? () {},
-            child: const Text(
-              'Ver más',
-              style: TextStyle(color: Colors.orange),
-            ),
-          ),
         ],
       ),
     );

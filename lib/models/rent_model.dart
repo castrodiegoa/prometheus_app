@@ -4,13 +4,15 @@ class Rent {
   String id;
   DateTime startDate;
   DateTime endDate;
-  int? totalPersons; // Debería ser int para reflejar el número de personas
+  String? totalPersons;
   double amount;
-  String? agreementUrl; // Asegurarse de que "agreement" esté bien escrito
-  bool isActive;
+  String? agreementUrl;
+  bool? isActive;
   DateTime? createdAt;
-  String tenantId; // Id del inquilino
-  String propertyId; // Id de la propiedad
+  DateTime? updatedAt;
+  String tenantId;
+  String propertyId;
+  String userId;
 
   // Constructor
   Rent({
@@ -20,10 +22,12 @@ class Rent {
     this.totalPersons,
     required this.amount,
     this.agreementUrl,
-    required this.isActive,
+    this.isActive,
     this.createdAt,
+    this.updatedAt,
     required this.tenantId,
     required this.propertyId,
+    required this.userId,
   });
 
   // Factory para crear un objeto Rent desde Firestore (deserialización)
@@ -39,24 +43,61 @@ class Rent {
       createdAt: data['createdAt'] != null
           ? (data['createdAt'] as Timestamp).toDate()
           : null,
+      updatedAt: data['createdAt'] != null
+          ? (data['createdAt'] as Timestamp).toDate()
+          : null,
       tenantId: data['tenantId'] ?? '',
       propertyId: data['propertyId'] ?? '',
+      userId: data['userId'] ?? '',
     );
   }
 
   // Método para convertir la instancia a un mapa compatible con Firestore (serialización)
   Map<String, dynamic> toFirestore() {
     return {
-      'id': id,
+      'id': id.toString(),
       'startDate': Timestamp.fromDate(startDate),
       'endDate': Timestamp.fromDate(endDate),
       'totalPersons': totalPersons,
-      'amount': amount,
-      'agreementUrl': agreementUrl,
+      'amount': amount.toString(),
+      'agreementUrl': agreementUrl.toString(),
       'isActive': isActive,
       'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
-      'tenantId': tenantId, // Se incluye el id del inquilino
-      'propertyId': propertyId, // Se incluye el id de la propiedad
+      'updatedAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
+      'tenantId': tenantId.toString(), // Se incluye el id del inquilino
+      'propertyId': propertyId.toString(), // Se incluye el id de la propiedad
+      'userId': userId.toString(),
     };
+  }
+
+  // Método copyWith para crear una nueva instancia de Tenant con valores actualizados
+  Rent copyWith({
+    String? id,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? totalPersons,
+    double? amount,
+    String? agreementUrl,
+    bool? isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? tenantId,
+    String? propertyId,
+    String? userId,
+  }) {
+    return Rent(
+      id: id ?? this.id,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      totalPersons: totalPersons ?? this.totalPersons,
+      amount: amount ?? this.amount,
+      agreementUrl: agreementUrl ?? this.agreementUrl,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      tenantId: tenantId ?? this.tenantId,
+      propertyId: propertyId ?? this.propertyId,
+      userId: userId ?? this.userId,
+    );
   }
 }

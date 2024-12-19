@@ -74,27 +74,27 @@ class _PaymentPlanManagementState extends State<PaymentPlanManagement> {
 
               const SizedBox(height: 16.0), // Espacio vertical
 
-              // Botón de filtro personalizado
-              Row(
-                children: [
-                  const Text('Filtrar', style: TextStyle(fontSize: 16.0)),
-                  const Spacer(),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.orange, // Fondo naranja
-                      borderRadius:
-                          BorderRadius.circular(12.0), // Bordes redondeados
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.tune,
-                          color: Colors.white), // Ícono blanco de filtro
-                      onPressed: () {
-                        // Acción para el filtro
-                      },
-                    ),
-                  ),
-                ],
-              ),
+              // // Botón de filtro personalizado
+              // Row(
+              //   children: [
+              //     const Text('Filtrar', style: TextStyle(fontSize: 16.0)),
+              //     const Spacer(),
+              //     Container(
+              //       decoration: BoxDecoration(
+              //         color: Colors.orange, // Fondo naranja
+              //         borderRadius:
+              //             BorderRadius.circular(12.0), // Bordes redondeados
+              //       ),
+              //       child: IconButton(
+              //         icon: const Icon(Icons.tune,
+              //             color: Colors.white), // Ícono blanco de filtro
+              //         onPressed: () {
+              //           // Acción para el filtro
+              //         },
+              //       ),
+              //     ),
+              //   ],
+              // ),
 
               const SizedBox(height: 16.0),
 

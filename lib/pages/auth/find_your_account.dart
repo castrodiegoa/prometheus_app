@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:prometheus_app/widgets/custom_input_field.dart';
 import 'package:prometheus_app/widgets/custom_button.dart';
 
 class FindAccountScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
 
-  FindAccountScreen({super.key}); // Controlador para el campo de entrada
+  FindAccountScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +50,65 @@ class FindAccountScreen extends StatelessWidget {
             const SizedBox(height: 20),
             CustomButton(
               text: 'Continuar',
-              onPressed: () {
-                // Aquí se puede realizar la validación o cualquier lógica antes de navegar
-                Get.toNamed('/confirm-account');
+              onPressed: () async {
+                final email = emailController.text.trim();
+                if (email.isNotEmpty) {
+                  try {
+                    // Lógica para enviar correo de recuperación
+                    await FirebaseAuth.instance
+                        .sendPasswordResetEmail(email: email);
+
+                    // Mostrar notificación de éxito
+                    Get.snackbar(
+                      'Correo enviado',
+                      'Se ha enviado un enlace para restablecer tu cuenta al correo $email.',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                    );
+
+                    // Navegar directamente al login
+                    Get.offAllNamed('/login');
+                  } on FirebaseAuthException catch (e) {
+                    if (e.code == 'user-not-found') {
+                      // Manejo específico para correo no registrado
+                      Get.snackbar(
+                        'Usuario no encontrado',
+                        'El correo electrónico $email no está registrado.',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                      );
+                    } else {
+                      // Otros errores de Firebase
+                      Get.snackbar(
+                        'Error',
+                        'Ocurrió un error al intentar enviar el correo.',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                      );
+                    }
+                  } catch (e) {
+                    // Errores generales
+                    Get.snackbar(
+                      'Error',
+                      'Algo salió mal. Por favor, inténtalo de nuevo.',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  }
+                } else {
+                  // Validación si el campo está vacío
+                  Get.snackbar(
+                    'Campo vacío',
+                    'Por favor, introduce tu dirección de correo.',
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.orange,
+                    colorText: Colors.white,
+                  );
+                }
               },
             ),
           ],

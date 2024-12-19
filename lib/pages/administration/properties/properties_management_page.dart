@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:prometheus_app/controllers/rent_controller.dart';
-import 'package:prometheus_app/models/rent_model.dart';
-import 'package:prometheus_app/pages/administration/rents/new_rent_page.dart';
-import 'package:prometheus_app/pages/administration/rents/edit_rent_page.dart';
+import 'package:prometheus_app/controllers/property_controller.dart';
+import 'package:prometheus_app/models/property_model.dart';
+import 'package:prometheus_app/pages/administration/properties/new_property_page.dart';
+import 'package:prometheus_app/pages/administration/properties/edit_property_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class RentsManagementPage extends StatefulWidget {
+class PropertiesManagementPage extends StatefulWidget {
   @override
-  _RentsManagementPageState createState() => _RentsManagementPageState();
+  _TenantsManagementPageState createState() => _TenantsManagementPageState();
 }
 
-class _RentsManagementPageState extends State<RentsManagementPage> {
-  final RentController _rentController = RentController();
-  List<Rent> _rents = [];
-  List<Rent> _filteredRents = [];
+class _TenantsManagementPageState extends State<PropertiesManagementPage> {
+  final PropertyController _propertyController = PropertyController();
+  List<Property> _properties = [];
+  List<Property> _filteredProperties = [];
   final TextEditingController _searchController = TextEditingController();
   bool _isLoading = true;
   String? _errorMessage;
@@ -22,7 +22,7 @@ class _RentsManagementPageState extends State<RentsManagementPage> {
   void initState() {
     super.initState();
     _searchController.addListener(_filterProperties);
-    _loadRents();
+    _loadTenants();
   }
 
   @override
@@ -32,22 +32,22 @@ class _RentsManagementPageState extends State<RentsManagementPage> {
     super.dispose();
   }
 
-  Future<void> _loadRents() async {
+  Future<void> _loadTenants() async {
     try {
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
         throw Exception('No user logged in');
       }
 
-      _rents = await _rentController.getRents(currentUser.uid);
+      _properties = await _propertyController.getProperties(currentUser.uid);
       setState(() {
-        _filteredRents = _rents;
+        _filteredProperties = _properties;
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Error al cargar las rentas: ${e.toString()}';
+        _errorMessage = 'Error al cargar las propiedades: ${e.toString()}';
       });
     }
   }
@@ -55,9 +55,9 @@ class _RentsManagementPageState extends State<RentsManagementPage> {
   void _filterProperties() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      _filteredRents = _rents
+      _filteredProperties = _properties
           .where((property) =>
-              property.id.toLowerCase().contains(query) ||
+              property.address.toLowerCase().contains(query) ||
               (property.createdAt?.toString() ?? '')
                   .toLowerCase()
                   .contains(query))
@@ -68,7 +68,7 @@ class _RentsManagementPageState extends State<RentsManagementPage> {
   void _clearSearch() {
     _searchController.clear();
     setState(() {
-      _filteredRents = _rents;
+      _filteredProperties = _properties;
     });
   }
 
@@ -78,7 +78,7 @@ class _RentsManagementPageState extends State<RentsManagementPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'Alquileres',
+          'Propiedades',
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
@@ -104,7 +104,7 @@ class _RentsManagementPageState extends State<RentsManagementPage> {
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Buscar alquiler',
+                  hintText: 'Buscar propiedad',
                   border: InputBorder.none,
                   prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   suffixIcon: IconButton(
@@ -121,11 +121,11 @@ class _RentsManagementPageState extends State<RentsManagementPage> {
               const Center(
                 child: CircularProgressIndicator(),
               )
-            else if (_filteredRents.isEmpty)
+            else if (_filteredProperties.isEmpty)
               const Expanded(
                 child: Center(
                   child: Text(
-                    'No hay alquileres que coincidan',
+                    'No hay propiedades que coincidan',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -137,12 +137,12 @@ class _RentsManagementPageState extends State<RentsManagementPage> {
             else
               Expanded(
                 child: ListView.builder(
-                  itemCount: _filteredRents.length,
+                  itemCount: _filteredProperties.length,
                   itemBuilder: (context, index) {
-                    final property = _filteredRents[index];
+                    final property = _filteredProperties[index];
                     return SectionCard(
                       icon: Icons.person_outline,
-                      title: property.id,
+                      title: property.address,
                       description:
                           'Registrada el ${property.createdAt?.toString() ?? 'N/A'}',
                       backgroundColor: Colors.green.shade100,
@@ -150,14 +150,14 @@ class _RentsManagementPageState extends State<RentsManagementPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => EditRentPage(
-                              entityId: property.id.toString(),
+                            builder: (context) => EditPropertyPage(
+                              entityId: property.id,
                               entityData: property.toFirestore(),
                             ),
                           ),
                         ).then((value) {
                           // Recargar los datos si se editó la propiedad
-                          _loadRents();
+                          _loadTenants();
                         });
                       },
                     );
@@ -167,15 +167,14 @@ class _RentsManagementPageState extends State<RentsManagementPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navegar a NewRentPage
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NewRentPage(),
+                    builder: (context) => NewPropertyPage(),
                   ),
                 ).then((value) {
-                  // Este código se ejecutará cuando regrese a esta página desde NewRentPage.
-                  _loadRents(); // Recargar los datos cuando regreses a la página anterior
+                  // Recargar los datos si se creó una nueva propiedad
+                  _loadTenants();
                 });
               },
               style: ElevatedButton.styleFrom(
@@ -184,7 +183,7 @@ class _RentsManagementPageState extends State<RentsManagementPage> {
               ),
               child: const Center(
                 child: Text(
-                  'Nuevo alquiler',
+                  'Nueva Propiedad',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),

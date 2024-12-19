@@ -10,6 +10,7 @@ import 'package:prometheus_app/pages/auth/find_your_account.dart';
 import 'package:prometheus_app/pages/auth/confirm_your_account.dart';
 import 'package:prometheus_app/pages/auth/create_new_password.dart';
 import 'package:prometheus_app/controllers/auth_controller.dart';
+import 'controllers/rent_controller.dart';
 import 'package:prometheus_app/pages/introduction/onboarding_page.dart'; // Importa la página de introducción
 
 void main() async {
@@ -19,6 +20,7 @@ void main() async {
   );
   await GetStorage.init(); // Inicializa GetStorage
   Get.put(AuthController()); // Registrar el AuthController
+  Get.put(RentController()); // Registro global
 
   runApp(const MyApp());
 }

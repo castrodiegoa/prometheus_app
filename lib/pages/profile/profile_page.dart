@@ -110,73 +110,96 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showChangePasswordDialog(BuildContext context) {
+    bool _obscureCurrentPassword = true;
+    bool _obscureNewPassword = true;
+    bool _obscureConfirmPassword = true;
+
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Cambiar Contraseña'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomInputField(
-                hintText: 'Contraseña actual',
-                controller: _controller.currentPasswordController,
-                icon: Icons.lock,
-                obscureText: true,
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.visibility_outlined,
-                    color: Colors.grey,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Cambiar Contraseña'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Contraseña actual
+                  CustomInputField(
+                    hintText: 'Contraseña actual',
+                    controller: _controller.currentPasswordController,
+                    icon: Icons.lock,
+                    obscureText: _obscureCurrentPassword,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureCurrentPassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureCurrentPassword = !_obscureCurrentPassword;
+                        });
+                      },
+                    ),
                   ),
-                  onPressed: () {
-                    // Acción para mostrar/ocultar contraseña
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              CustomInputField(
-                hintText: 'Nueva contraseña',
-                controller: _controller.newPasswordController,
-                icon: Icons.lock_outline,
-                obscureText: true,
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.visibility_outlined,
-                    color: Colors.grey,
+                  const SizedBox(height: 20),
+                  // Nueva contraseña
+                  CustomInputField(
+                    hintText: 'Nueva contraseña',
+                    controller: _controller.newPasswordController,
+                    icon: Icons.lock_outline,
+                    obscureText: _obscureNewPassword,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureNewPassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureNewPassword = !_obscureNewPassword;
+                        });
+                      },
+                    ),
                   ),
-                  onPressed: () {
-                    // Acción para mostrar/ocultar contraseña
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              CustomInputField(
-                hintText: 'Confirmar contraseña',
-                controller: _controller.confirmPasswordController,
-                icon: Icons.lock_outline,
-                obscureText: true,
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.visibility_outlined,
-                    color: Colors.grey,
+                  const SizedBox(height: 20),
+                  // Confirmar contraseña
+                  CustomInputField(
+                    hintText: 'Confirmar contraseña',
+                    controller: _controller.confirmPasswordController,
+                    icon: Icons.lock_outline,
+                    obscureText: _obscureConfirmPassword,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirmPassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                        });
+                      },
+                    ),
                   ),
-                  onPressed: () {
-                    // Acción para mostrar/ocultar contraseña
-                  },
-                ),
+                ],
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => _controller.changePassword(context),
-              child: const Text('Cambiar'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-          ],
+              actions: [
+                TextButton(
+                  onPressed: () => _controller.changePassword(context),
+                  child: const Text('Cambiar'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancelar'),
+                ),
+              ],
+            );
+          },
         );
       },
     );

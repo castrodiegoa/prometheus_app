@@ -1,36 +1,74 @@
 import 'package:flutter/material.dart';
-import 'package:prometheus_app/pages/administration/tenants/new_tenant_page.dart'; // Importar NewTenantPage
-import 'package:prometheus_app/pages/administration/tenants/edit_tenant_page.dart'; // Importar EditTenantPage
+import 'package:prometheus_app/controllers/tenant_controller.dart';
+import 'package:prometheus_app/models/tenant_model.dart';
+import 'package:prometheus_app/pages/administration/tenants/new_tenant_page.dart';
+import 'package:prometheus_app/pages/administration/tenants/edit_tenant_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class TenantsManagementPage extends StatelessWidget {
-  final List<Map<String, String>> tenants = [
-    {
-      'name': 'Inquilino José Guillén',
-      'description': 'Contrato desde 10/01/2023'
-    },
-    {
-      'name': 'Inquilino María Ramírez',
-      'description': 'Contrato desde 12/01/2023'
-    },
-  ];
+class TenantsManagementPage extends StatefulWidget {
+  @override
+  _TenantsManagementPageState createState() => _TenantsManagementPageState();
+}
 
-  TenantsManagementPage();
+class _TenantsManagementPageState extends State<TenantsManagementPage> {
+  final TenantController _tenantController = TenantController();
+  List<Tenant> _tenants = [];
+  List<Tenant> _filteredTenants = []; // Lista filtrada para la búsqueda
+  bool _isLoading = true;
+  String? _errorMessage;
+  String _searchQuery = ''; // Consulta de búsqueda
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTenants();
+  }
+
+  Future<void> _loadTenants() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception('No user logged in');
+      }
+
+      _tenants = await _tenantController.getTenants(currentUser.uid);
+      _filteredTenants = _tenants; // Inicialmente muestra todos los inquilinos
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Error al cargar los inquilinos: ${e.toString()}';
+      });
+    }
+  }
+
+  void _filterTenants(String query) {
+    setState(() {
+      _searchQuery = query;
+      _filteredTenants = _tenants
+          .where((tenant) => '${tenant.firstName} ${tenant.lastName}'
+              .toLowerCase()
+              .contains(query.toLowerCase()))
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo blanco
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            'Inquilinos',
-            style: TextStyle(color: Colors.black),
-          ),
+        title: const Text(
+          'Inquilinos',
+          style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined,
+              color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -40,6 +78,7 @@ class TenantsManagementPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
+            const SizedBox(height: 20),
             // Barra de búsqueda
             Container(
               decoration: BoxDecoration(
@@ -47,85 +86,73 @@ class TenantsManagementPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
+                onChanged: _filterTenants, // Actualiza la búsqueda
                 decoration: InputDecoration(
                   hintText: 'Buscar inquilino',
                   border: InputBorder.none,
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
-                  suffixIcon: Icon(Icons.close, color: Colors.grey),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.close, color: Colors.grey),
+                          onPressed: () {
+                            _filterTenants(''); // Limpia la búsqueda
+                          },
+                        )
+                      : null,
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 ),
               ),
             ),
-            SizedBox(height: 20),
-
-            // Fila de filtro y botón de configuración
-            Row(
-              children: [
-                const Text(
-                  'Filtrar',
-                  style: TextStyle(fontSize: 16.0),
-                ),
-                const Spacer(),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.orange, // Fondo naranja
-                    borderRadius:
-                        BorderRadius.circular(12.0), // Bordes redondeados
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.tune,
-                        color: Colors.white), // Ícono blanco de filtro
-                    onPressed: () {
-                      // Mostrar el modal de filtros
-                      showModalBottomSheet(
-                        context: context,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(25.0),
-                          ),
-                        ),
-                        builder: (BuildContext context) {
-                          return _buildFilterModal(context);
-                        },
-                      );
-                    },
+            const SizedBox(height: 20),
+            if (_isLoading)
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+            else if (_filteredTenants.isEmpty)
+              const Expanded(
+                child: Center(
+                  child: Text(
+                    'No hay inquilinos que coincidan con la búsqueda',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: 20),
-
-            // Lista de inquilinos
-            Expanded(
-              child: ListView.builder(
-                itemCount: tenants.length,
-                itemBuilder: (context, index) {
-                  final tenant = tenants[index];
-                  return SectionCard(
-                    icon: Icons.person_outline,
-                    title:
-                        tenant['name'] ?? 'Sin nombre', // Nombre del inquilino
-                    description: tenant['description'] ?? 'Sin descripción',
-                    backgroundColor: Colors.green.shade100, // Color verde claro
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditTenantPage(
-                            entityId: tenant['name'] ??
-                                '0', // Asegurarse de que no sea nulo
-                            entityData: tenant,
+              )
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _filteredTenants.length,
+                  itemBuilder: (context, index) {
+                    final tenant = _filteredTenants[index];
+                    return SectionCard(
+                      icon: Icons.person_outline,
+                      title: '${tenant.firstName} ${tenant.lastName}',
+                      description:
+                          'Registrado el ${tenant.createdAt?.toString() ?? 'N/A'}',
+                      backgroundColor: Colors.green.shade100,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditTenantPage(
+                              entityId: tenant.id,
+                              entityData: tenant.toFirestore(),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
+                        ).then((value) {
+                          // Recargar los datos si se editó un inquilino
+                          _loadTenants();
+                        });
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-
-            // Botón "Nuevo Inquilino"
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -133,96 +160,100 @@ class TenantsManagementPage extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => NewTenantPage(),
                   ),
-                );
+                ).then((value) {
+                  // Recargar los datos si se agregó un nuevo inquilino
+                  _loadTenants();
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
-                padding: EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 15),
               ),
-              child: Center(
+              child: const Center(
                 child: Text(
                   'Nuevo Inquilino',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildFilterModal(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
+// El método _buildFilterModal se mantiene igual que en la implementación anterior
+Widget _buildFilterModal(BuildContext context) {
+  return Container(
+    padding: EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(25),
+        topRight: Radius.circular(25),
+      ),
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Título centrado
+        Text(
+          'Aplicar Filtros',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center, // Centramos el texto
         ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Título centrado
-          Text(
+        SizedBox(height: 20),
+
+        // Dropdown de filtro
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Propiedad',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            Expanded(
+              child: DropdownButton<String>(
+                isExpanded: true,
+                value: 'ID',
+                items: <String>['ID', 'Nombre', 'Fecha'].map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  // Acción al cambiar el filtro
+                },
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+
+        // Botón de aplicar filtros
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context); // Cerrar el modal
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange,
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          ),
+          child: Text(
             'Aplicar Filtros',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center, // Centramos el texto
+            style: TextStyle(fontSize: 16, color: Colors.white),
           ),
-          SizedBox(height: 20),
-
-          // Dropdown de filtro
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Propiedad',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-              Expanded(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: 'ID',
-                  items: <String>['ID', 'Nombre', 'Fecha'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    // Acción al cambiar el filtro
-                  },
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-
-          // Botón de aplicar filtros
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Cerrar el modal
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-            ),
-            child: Text(
-              'Aplicar Filtros',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }
 
 class SectionCard extends StatelessWidget {
@@ -265,7 +296,7 @@ class SectionCard extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         subtitle: Text(description),
         onTap: onTap,
